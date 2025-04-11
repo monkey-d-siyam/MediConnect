@@ -97,14 +97,16 @@ def register():
                 (name, age, email, hashed_password, role)
             )
             mysql.connection.commit()
+            userid = cursor.lastrowid
             cursor.close()
-            flash('Account created successfully! You can now log in.', 'success')
+
             session['loggedin'] = True
-            session['userid'] = cursor.lastrowid
+            session['userid'] = userid
             session['email'] = email
             session['role'] = role
             session['name'] = name
-            return redirect(url_for('setup_profile'))
+
+            return redirect(url_for('login'))
 
 
     return render_template('register.html', form=form)
@@ -127,8 +129,10 @@ def login():
             session['userid'] = user['userid']
             session['name'] = user['name']
             session['email'] = user['email']
+            session['role'] = user['role']  # <-- Add this line
             flash('Logged in successfully!', 'success')
             return redirect(url_for('profile'))
+
         else:
             flash('Invalid email or password.', 'danger')
 
@@ -207,6 +211,27 @@ def setup_profile():
 
     flash('Invalid role.', 'danger')
     return redirect(url_for('home'))
+
+
+@app.route('/setup_doctor_profile', methods=['GET', 'POST'])
+def setup_doctor_profile():
+    if 'loggedin' not in session or session.get('role') != 'doctor':
+        return redirect(url_for('login'))
+
+    form = DoctorProfileForm()
+    if form.validate_on_submit():
+        userid = session.get('userid')
+        cursor = mysql.connection.cursor()
+        cursor.execute('''INSERT INTO doctor_profile (doctor_id, gender, specialization, experience_years, qualifications, 
+                        hospital_affiliation, bio, contact_number, available_timeslots) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                       (userid, form.gender.data, form.specialization.data, form.experience_years.data,
+                        form.qualifications.data, form.hospital_affiliation.data, form.bio.data,
+                        form.contact_number.data, form.available_timeslots.data))
+        mysql.connection.commit()
+        flash('Doctor profile created successfully!', 'success')
+        return redirect(url_for('profile'))
+    return render_template('setup_doctor_profile.html', form=form)
 
 
 # Run App
