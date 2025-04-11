@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="mt-5 d-flex justify-content-center">
+    <div class="content-section p-4 shadow rounded bg-white" style="width: 100%; max-width: 500px;">
+        <form method="POST" action="{{ url_for('register') }}">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom pb-3 mb-4 text-center h4 fw-bold text-primary">Join MediConnect Today</legend>
+                
+                <div class="mb-3">
+                    {{ form.name.label }}
+                    {{ form.name(class="form-control form-control-lg", placeholder="Enter your full name") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.age.label }}
+                    {{ form.age(class="form-control form-control-lg", placeholder="Enter your age") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.email.label }}
+                    {{ form.email(class="form-control form-control-lg", placeholder="Enter your email") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control form-control-lg", placeholder="Enter your password") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.confirm_password.label }}
+                    {{ form.confirm_password(class="form-control form-control-lg", placeholder="Confirm your password") }}
+                </div>
+                
+                <div class="mb-4">
+                    {{ form.role.label }}
+                    {{ form.role(class="form-select form-select-lg") }}
+                </div>
+            </fieldset>
+            
+            <div class="d-grid gap-2">
+                {{ form.submit(class="btn btn-dark btn-lg") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <small class="text-muted">
+        Already have an account?
+        <a href="{{ url_for('login') }}" class="text-decoration-none">Sign In</a>
+    </small>
+</div>
+{% endblock content %}

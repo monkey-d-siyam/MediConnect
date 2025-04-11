@@ -24,3 +24,27 @@ body {
     width: 100px;
     margin: 10px;
 }
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 100% of viewport height */
+  }
+  
+  main {
+    flex: 1; /* takes up the remaining space */
+  }
+  
+  /* Optional: style footer */
+  footer {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+  

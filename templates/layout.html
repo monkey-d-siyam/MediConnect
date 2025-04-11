@@ -4,49 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if title %}
-        <title>MediConnect-{{ title }}</title>
+        <title>MediConnect - {{ title }}</title>
     {% else %}
         <title>MediConnect</title>
     {% endif %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="#">MediConnect</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#">Appointment</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Virtual Consultation</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Medical Records</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Pharmacy & Medicine</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Emergemcy Ai Assistancce</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Health Education</a></li>
-            </ul>
-            <div class="d-flex ms-3">
-                <a href="#" class="btn btn-outline-dark me-2">Login</a>
-                <a href="#" class="btn btn-dark">Sign up</a>
+<div class="wrapper d-flex flex-column min-vh-100">
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">MediConnect</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Appointment</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Virtual Consultation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Medical Records</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Pharmacy & Medicine</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Emergency AI Assistance</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Health Education</a></li>
+                </ul>
+                <div class="d-flex ms-3">
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-dark me-2">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-dark">Sign up</a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- Main Content -->
-<div class="container my-5">
-    {% block content %}
-    {% endblock %}
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        <div class="container my-5">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 bg-white shadow-sm">
+        <p>Your trusted platform for remote healthcare | Safe, Fast, Reliable</p>
+    </footer>
+
 </div>
-
-
-<footer class="text-center py-4 bg-white shadow-sm">
-    <p>Your trusted platform for remote healthcare | Safe, Fast, Reliable</p>
-</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
