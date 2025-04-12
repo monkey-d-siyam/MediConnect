@@ -175,7 +175,7 @@ def setup_profile():
 
     role = session.get('role')
     if not role:
-        return redirect(url_for('login'))  # or show an error
+        return redirect(url_for('login'))
 
     userid = session.get('userid')
 
@@ -183,6 +183,14 @@ def setup_profile():
         form = DoctorProfileForm()
         if form.validate_on_submit():
             cursor = mysql.connection.cursor()
+            # Check if a profile already exists
+            cursor.execute('SELECT * FROM doctor_profile WHERE doctor_id = %s', (userid,))
+            existing_profile = cursor.fetchone()
+            if existing_profile:
+                flash('Doctor profile already exists. Please edit your profile.', 'warning')
+                return redirect(url_for('profile'))
+
+            # Insert new profile
             cursor.execute('''INSERT INTO doctor_profile (doctor_id, gender, specialization, experience_years, qualifications, 
                             hospital_affiliation, bio, contact_number, available_timeslots) 
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
@@ -198,6 +206,14 @@ def setup_profile():
         form = PatientProfileForm()
         if form.validate_on_submit():
             cursor = mysql.connection.cursor()
+            # Check if a profile already exists
+            cursor.execute('SELECT * FROM patient_profile WHERE patient_id = %s', (userid,))
+            existing_profile = cursor.fetchone()
+            if existing_profile:
+                flash('Patient profile already exists. Please edit your profile.', 'warning')
+                return redirect(url_for('profile'))
+
+            # Insert new profile
             cursor.execute('''INSERT INTO patient_profile (patient_id, gender, blood_group, contact_number, address, 
                             medical_history, allergies, current_medications, emergency_contact) 
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
@@ -232,6 +248,56 @@ def setup_doctor_profile():
         flash('Doctor profile created successfully!', 'success')
         return redirect(url_for('profile'))
     return render_template('setup_doctor_profile.html', form=form)
+
+
+@app.route('/appointments', methods=['GET', 'POST'])
+def appointments():
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+
+    role = session['role']
+    userid = session['userid']
+
+    if role == 'patient':
+        # Patient booking an appointment
+        if request.method == 'POST':
+            doctor_id = request.form.get('doctor_id')
+            appointment_date = request.form.get('appointment_date')
+            appointment_time = request.form.get('appointment_time')
+            reason = request.form.get('reason')
+
+            cursor = mysql.connection.cursor()
+            cursor.execute('''INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, reason) 
+                              VALUES (%s, %s, %s, %s, %s)''',
+                           (userid, doctor_id, appointment_date, appointment_time, reason))
+            mysql.connection.commit()
+            flash('Appointment booked successfully!', 'success')
+            return redirect(url_for('appointments'))
+
+        # Fetch list of doctors for the patient to choose from
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('''
+            SELECT dp.doctor_id, u.name, dp.specialization 
+            FROM doctor_profile dp
+            JOIN user u ON dp.doctor_id = u.userid
+        ''')
+        doctors = cursor.fetchall()
+        return render_template('book_appointment.html', doctors=doctors)
+
+    elif role == 'doctor':
+        # Doctor viewing their appointments
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('''SELECT a.appointment_date, a.appointment_time, a.reason, 
+                          u.name AS patient_name, p.contact_number 
+                          FROM appointments a 
+                          JOIN patient_profile p ON a.patient_id = p.patient_id 
+                          JOIN user u ON p.patient_id = u.userid 
+                          WHERE a.doctor_id = %s''', (userid,))
+        appointments = cursor.fetchall()
+        return render_template('view_appointments.html', appointments=appointments)
+
+    flash('Invalid role.', 'danger')
+    return redirect(url_for('home'))
 
 
 # Run App

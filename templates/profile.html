@@ -13,7 +13,11 @@
                     <li class="list-group-item"><strong>{{ session.name }}</strong></li>
                     <li class="list-group-item">Role: {{ role|capitalize }}</li>
                     <li class="list-group-item">Email: {{ email }}</li>
-                    <li class="list-group-item"><a href="{{ url_for('setup_doctor_profile') }}">Edit Profile</a></li>
+					{% if role == 'doctor' %}
+					<li class="list-group-item"><a href="{{ url_for('setup_doctor_profile') }}">Edit Profile</a></li>
+					{% elif role == 'patient' %}
+					<li class="list-group-item"><a href="{{ url_for('setup_profile') }}">Edit Profile</a></li>
+					{% endif %}
                     <li class="list-group-item"><a href="{{ url_for('logout') }}" class="text-danger">Logout</a></li>
                 </ul>
             </div>
@@ -24,8 +28,7 @@
                 <h2 class="mb-4">Welcome, {{ name }}!</h2>
                 <p class="text-muted">Here is an overview of your account and activity.</p>
 
-                {% if role == 'doctor' %}
-                <!-- Doctor Dashboard -->
+                {% if role == 'doctor' and profile %}
                 <div class="card mt-4">
                     <div class="card-header bg-primary text-white">
                         <h5>Doctor Information</h5>
