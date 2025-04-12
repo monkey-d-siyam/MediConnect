@@ -6,6 +6,7 @@ from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 import MySQLdb.cursors
 from datetime import timedelta
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 
@@ -17,7 +18,20 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'mediConnect_db'
 app.permanent_session_lifetime = timedelta(minutes=30)
 
+#Email Configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'your-email@gmail.com'
+app.config['MAIL_PASSWORD'] = 'your-email-password'
+
+mail = Mail(app)
 mysql = MySQL(app)
+
+def send_email(subject, recipient, body):
+    msg = Message(subject, sender='your-email@gmail.com', recipients=[recipient])
+    msg.body = body
+    mail.send(msg)
 
 # Registration Form
 class RegistrationForm(FlaskForm):
@@ -233,6 +247,122 @@ def setup_doctor_profile():
         return redirect(url_for('profile'))
     return render_template('setup_doctor_profile.html', form=form)
 
+from wtforms.fields import DateTimeLocalField
+
+class AppointmentForm(FlaskForm):
+    doctor_id = SelectField('Select Doctor', coerce=int, validators=[DataRequired()])
+    appointment_date = DateTimeLocalField('Appointment Date & Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    submit = SubmitField('Book Appointment')
+
+
+@app.route('/appointments', methods=['GET', 'POST'])
+def appointments():
+    if 'loggedin' not in session or session['role'] != 'patient':
+        return redirect(url_for('login'))
+
+    form = AppointmentForm()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Fetch available doctors
+    cursor.execute("SELECT userid, name, email FROM user WHERE role = 'doctor'")
+    doctors = cursor.fetchall()
+    form.doctor_id.choices = [(doctor['userid'], doctor['name']) for doctor in doctors]
+
+    if form.validate_on_submit():
+        patient_id = session['userid']
+        doctor_id = form.doctor_id.data
+        appointment_date = form.appointment_date.data
+
+        # Insert appointment into the database
+        cursor.execute('''
+            INSERT INTO appointments (patient_id, doctor_id, appointment_date)
+            VALUES (%s, %s, %s)
+        ''', (patient_id, doctor_id, appointment_date))
+        mysql.connection.commit()
+
+        # Fetch doctor's email
+        doctor_email = next((doctor['email'] for doctor in doctors if doctor['userid'] == doctor_id), None)
+
+        # Send email notification to the doctor
+        if doctor_email:
+            subject = "New Appointment Request"
+            body = f"Dear Doctor,\n\nYou have a new appointment request from {session['name']} on {appointment_date}.\n\nPlease log in to your dashboard to manage this appointment."
+            send_email(subject, doctor_email, body)
+
+        flash('Appointment booked successfully! A notification has been sent to the doctor.', 'success')
+        return redirect(url_for('appointments'))
+
+    # Fetch patient's appointments
+    cursor.execute('''
+        SELECT a.*, u.name AS doctor_name 
+        FROM appointments a 
+        JOIN user u ON a.doctor_id = u.userid 
+        WHERE a.patient_id = %s
+        ORDER BY a.appointment_date
+    ''', (session['userid'],))
+    appointments = cursor.fetchall()
+
+    return render_template('appointments.html', form=form, appointments=appointments)
+
+
+@app.route('/doctor/appointments', methods=['GET'])
+def doctor_appointments():
+    if 'loggedin' not in session or session['role'] != 'doctor':
+        flash('You must be logged in as a doctor to access this page.', 'danger')
+        return redirect(url_for('login'))
+
+    doctor_id = session['userid']
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Fetch all appointments for the logged-in doctor
+    cursor.execute('''
+        SELECT a.appointment_id, a.appointment_date, a.status, u.name AS patient_name
+        FROM appointments a
+        JOIN user u ON a.patient_id = u.userid
+        WHERE a.doctor_id = %s
+        ORDER BY a.appointment_date
+    ''', (doctor_id,))
+    appointments = cursor.fetchall()
+
+    return render_template('doctor_appointments.html', appointments=appointments)
+
+@app.route('/appointment/<int:appointment_id>/update', methods=['POST'])
+def update_appointment(appointment_id):
+    if 'loggedin' not in session or session['role'] != 'doctor':
+        return redirect(url_for('login'))
+
+    status = request.form.get('status')
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Update appointment status
+    cursor.execute('''
+        UPDATE appointments 
+        SET status = %s 
+        WHERE appointment_id = %s
+    ''', (status, appointment_id))
+    mysql.connection.commit()
+
+    # Fetch patient email and appointment details
+    cursor.execute('''
+        SELECT a.appointment_date, u.email, u.name AS patient_name 
+        FROM appointments a 
+        JOIN user u ON a.patient_id = u.userid 
+        WHERE a.appointment_id = %s
+    ''', (appointment_id,))
+    appointment = cursor.fetchone()
+
+    if appointment:
+        patient_email = appointment['email']
+        appointment_date = appointment['appointment_date']
+        patient_name = appointment['patient_name']
+
+        # Send email notification to the patient
+        subject = "Appointment Status Update"
+        body = f"Dear {patient_name},\n\nYour appointment on {appointment_date} has been updated to '{status}'.\n\nPlease log in to your account for more details."
+        send_email(subject, patient_email, body)
+
+    flash('Appointment updated successfully! A notification has been sent to the patient.', 'success')
+    return redirect(url_for('doctor_appointments'))
 
 # Run App
 if __name__ == "__main__":

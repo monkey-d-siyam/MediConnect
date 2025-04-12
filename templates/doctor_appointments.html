@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Doctor's Appointments</h2>
+    {% if appointments %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Patient Name</th>
+                <th>Appointment Date & Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.patient_name }}</td>
+                <td>{{ appointment.appointment_date }}</td>
+                <td>{{ appointment.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No appointments found.</p>
+    {% endif %}
+</div>
+{% endblock %}
