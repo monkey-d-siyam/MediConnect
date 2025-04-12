@@ -2,9 +2,9 @@
 
 {% block content %}
 <div class="container my-5">
-    <h2 class="mb-4">Doctor's Appointments</h2>
+    <h2 class="mb-4 text-center">My Appointments</h2>
     {% if appointments %}
-    <table class="table table-bordered">
+    <table class="table table-bordered text-center">
         <thead>
             <tr>
                 <th>Patient Name</th>
@@ -17,13 +17,23 @@
             <tr>
                 <td>{{ appointment.patient_name }}</td>
                 <td>{{ appointment.appointment_date }}</td>
-                <td>{{ appointment.status }}</td>
+                <td>
+                    {% if appointment.status == 'Pending' %}
+                        <span style="color: orange; font-weight: bold;">Pending</span>
+                    {% elif appointment.status == 'Confirmed' %}
+                        <span style="color: green; font-weight: bold;">Confirmed</span>
+                    {% elif appointment.status == 'Cancelled' %}
+                        <span style="color: red; font-weight: bold;">Cancelled</span>
+                    {% else %}
+                        <span style="color: gray; font-weight: bold;">Unknown</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
-    <p>No appointments found.</p>
+    <p class="text-center">No appointments found.</p>
     {% endif %}
 </div>
 {% endblock %}
