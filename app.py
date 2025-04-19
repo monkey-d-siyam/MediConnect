@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import MySQLdb.cursors
 from datetime import timedelta
 from flask_mail import Mail, Message
+import os
 
 app = Flask(__name__)
 
@@ -15,15 +16,15 @@ app.config['SECRET_KEY'] = 'veryverysusthatyourareloolingformysecretkey'
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'mediConnect_db'
+app.config['MYSQL_DB'] = 'mediconnect_db'
 app.permanent_session_lifetime = timedelta(minutes=30)
 
 # Email Configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your-email@gmail.com'
-app.config['MAIL_PASSWORD'] = 'your-email-password'
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 
 mail = Mail(app)
 mysql = MySQL(app)
@@ -72,6 +73,11 @@ class PatientProfileForm(FlaskForm):
     current_medications = StringField('Current Medications')
     emergency_contact = StringField('Emergency Contact')
     submit = SubmitField('Save Profile')
+#Appointment Form
+class AppointmentForm(FlaskForm):
+    doctor_id = SelectField('Select Doctor', coerce=int, validators=[DataRequired()])
+    appointment_date = StringField('Appointment Date (YYYY-MM-DD)', validators=[DataRequired()])
+    submit = SubmitField('Book Appointment')
 
 # Home Route
 @app.route('/')
