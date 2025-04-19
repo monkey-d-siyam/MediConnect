@@ -18,7 +18,7 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'mediConnect_db'
 app.permanent_session_lifetime = timedelta(minutes=30)
 
-#Email Configuration
+# Email Configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -49,7 +49,6 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-
 # Doctor Profile Form
 class DoctorProfileForm(FlaskForm):
     gender = SelectField('Gender', choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')])
@@ -74,12 +73,11 @@ class PatientProfileForm(FlaskForm):
     emergency_contact = StringField('Emergency Contact')
     submit = SubmitField('Save Profile')
 
-
-
 # Home Route
 @app.route('/')
 @app.route('/home')
 def home():
+    print("Rendering home.html")
     return render_template('home.html')
 
 # About Route
@@ -122,7 +120,6 @@ def register():
 
             return redirect(url_for('login'))
 
-
     return render_template('register.html', form=form)
 
 # Login Route
@@ -143,7 +140,7 @@ def login():
             session['userid'] = user['userid']
             session['name'] = user['name']
             session['email'] = user['email']
-            session['role'] = user['role']  # <-- Add this line
+            session['role'] = user['role']
             flash('Logged in successfully!', 'success')
             return redirect(url_for('profile'))
 
@@ -152,7 +149,7 @@ def login():
 
     return render_template('login.html', form=form)
 
-# Profile Page (Simple)
+# Profile Page
 @app.route('/profile')
 def profile():
     if 'loggedin' not in session:
@@ -173,7 +170,6 @@ def profile():
     return render_template('profile.html', name=session['name'], email=session['email'],
                            role=role, profile=profile_data)
 
-
 # Logout
 @app.route('/logout')
 def logout():
@@ -181,80 +177,53 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
-
-@app.route('/setup_profile', methods=['GET', 'POST'])
-def setup_profile():
-    if 'loggedin' not in session:
+# Doctor Appointments Route
+@app.route('/doctor/appointments', methods=['GET', 'POST'])
+def doctor_appointments():
+    if 'loggedin' not in session or session['role'] != 'doctor':
+        flash('You must be logged in as a doctor to access this page.', 'danger')
         return redirect(url_for('login'))
 
-    role = session.get('role')
-    if not role:
-        return redirect(url_for('login'))  # or show an error
+    doctor_id = session['userid']
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-    userid = session.get('userid')
+    # Fetch all appointments for the logged-in doctor
+    cursor.execute('''
+        SELECT a.appointment_id, a.appointment_date, a.status, u.name AS patient_name
+        FROM appointments a
+        JOIN user u ON a.patient_id = u.userid
+        WHERE a.doctor_id = %s
+        ORDER BY a.appointment_date
+    ''', (doctor_id,))
+    appointments = cursor.fetchall()
 
-    if role == 'doctor':
-        form = DoctorProfileForm()
-        if form.validate_on_submit():
-            cursor = mysql.connection.cursor()
-            cursor.execute('''INSERT INTO doctor_profile (doctor_id, gender, specialization, experience_years, qualifications, 
-                            hospital_affiliation, bio, contact_number, available_timeslots) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-                           (userid, form.gender.data, form.specialization.data, form.experience_years.data,
-                            form.qualifications.data, form.hospital_affiliation.data, form.bio.data,
-                            form.contact_number.data, form.available_timeslots.data))
-            mysql.connection.commit()
-            flash('Doctor profile created successfully!', 'success')
-            return redirect(url_for('profile'))
-        return render_template('setup_doctor_profile.html', form=form)
+    if request.method == 'POST':
+        appointment_id = request.form.get('appointment_id')
+        action = request.form.get('action')
 
-    elif role == 'patient':
-        form = PatientProfileForm()
-        if form.validate_on_submit():
-            cursor = mysql.connection.cursor()
-            cursor.execute('''INSERT INTO patient_profile (patient_id, gender, blood_group, contact_number, address, 
-                            medical_history, allergies, current_medications, emergency_contact) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-                           (userid, form.gender.data, form.blood_group.data, form.contact_number.data, form.address.data,
-                            form.medical_history.data, form.allergies.data, form.current_medications.data,
-                            form.emergency_contact.data))
-            mysql.connection.commit()
-            flash('Patient profile created successfully!', 'success')
-            return redirect(url_for('profile'))
-        return render_template('setup_patient_profile.html', form=form)
+        if action == 'approve':
+            status = 'Approved'
+        elif action == 'decline':
+            status = 'Declined'
+        elif action == 'reschedule':
+            status = 'Rescheduled'
+        elif action == 'checked':
+            status = 'Checked'
 
-    flash('Invalid role.', 'danger')
-    return redirect(url_for('home'))
-
-
-@app.route('/setup_doctor_profile', methods=['GET', 'POST'])
-def setup_doctor_profile():
-    if 'loggedin' not in session or session.get('role') != 'doctor':
-        return redirect(url_for('login'))
-
-    form = DoctorProfileForm()
-    if form.validate_on_submit():
-        userid = session.get('userid')
-        cursor = mysql.connection.cursor()
-        cursor.execute('''INSERT INTO doctor_profile (doctor_id, gender, specialization, experience_years, qualifications, 
-                        hospital_affiliation, bio, contact_number, available_timeslots) 
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-                       (userid, form.gender.data, form.specialization.data, form.experience_years.data,
-                        form.qualifications.data, form.hospital_affiliation.data, form.bio.data,
-                        form.contact_number.data, form.available_timeslots.data))
+        # Update the appointment status
+        cursor.execute('''
+            UPDATE appointments
+            SET status = %s
+            WHERE appointment_id = %s
+        ''', (status, appointment_id))
         mysql.connection.commit()
-        flash('Doctor profile created successfully!', 'success')
-        return redirect(url_for('profile'))
-    return render_template('setup_doctor_profile.html', form=form)
 
-from wtforms.fields import DateTimeLocalField
+        flash('Appointment updated successfully!', 'success')
+        return redirect(url_for('doctor_appointments'))
 
-class AppointmentForm(FlaskForm):
-    doctor_id = SelectField('Select Doctor', coerce=int, validators=[DataRequired()])
-    appointment_date = DateTimeLocalField('Appointment Date & Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    submit = SubmitField('Book Appointment')
+    return render_template('doctor_appointments.html', appointments=appointments)
 
-
+# Patient Appointments Route
 @app.route('/appointments', methods=['GET', 'POST'])
 def appointments():
     if 'loggedin' not in session or session['role'] != 'patient':
@@ -280,16 +249,7 @@ def appointments():
         ''', (patient_id, doctor_id, appointment_date))
         mysql.connection.commit()
 
-        # Fetch doctor's email
-        doctor_email = next((doctor['email'] for doctor in doctors if doctor['userid'] == doctor_id), None)
-
-        # Send email notification to the doctor
-        if doctor_email:
-            subject = "New Appointment Request"
-            body = f"Dear Doctor,\n\nYou have a new appointment request from {session['name']} on {appointment_date}.\n\nPlease log in to your dashboard to manage this appointment."
-            send_email(subject, doctor_email, body)
-
-        flash('Appointment booked successfully! A notification has been sent to the doctor.', 'success')
+        flash('Appointment booked successfully!', 'success')
         return redirect(url_for('appointments'))
 
     # Fetch patient's appointments
@@ -305,65 +265,45 @@ def appointments():
     return render_template('appointments.html', form=form, appointments=appointments)
 
 
-@app.route('/doctor/appointments', methods=['GET'])
-def doctor_appointments():
-    if 'loggedin' not in session or session['role'] != 'doctor':
-        flash('You must be logged in as a doctor to access this page.', 'danger')
-        return redirect(url_for('login'))
+@app.route('/health_tips')
+def health_tips():
+    # Sample data for health tips and articles
+    articles = [
+        {"title": "10 Tips for a Healthy Lifestyle", "content": "Eat healthy, exercise regularly, and sleep well."},
+        {"title": "The Importance of Hydration", "content": "Drinking enough water is essential for your body."},
+        {"title": "Managing Stress Effectively", "content": "Practice mindfulness and relaxation techniques."}
+    ]
+    videos = [
+        {"title": "Yoga for Beginners", "url": "https://www.youtube.com/embed/v7AYKMP6rOE"},
+        {"title": "Healthy Eating Habits", "url": "https://www.youtube.com/embed/dBnniua6-oM"}
+    ]
+    return render_template('health_tips.html', articles=articles, videos=videos)
+@app.route('/symptom_checker', methods=['GET', 'POST'])
+def symptom_checker():
+    suggestion = None
+    if request.method == 'POST':
+        symptoms = request.form.get('symptoms').lower()
+        if "fever" in symptoms or "cough" in symptoms:
+            suggestion = "You may have a viral infection. Please consult a doctor if symptoms persist."
+        elif "chest pain" in symptoms or "shortness of breath" in symptoms:
+            suggestion = "This could be a serious condition. Seek immediate medical attention."
+        else:
+            suggestion = "Your symptoms are not recognized. Please consult a doctor for a proper diagnosis."
+    return render_template('symptom_checker.html', suggestion=suggestion)
 
-    doctor_id = session['userid']
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+@app.route('/emergency_contacts', methods=['GET', 'POST'])
+def emergency_contacts():
+    # Implementation for emergency contacts
+    pass
 
-    # Fetch all appointments for the logged-in doctor
-    cursor.execute('''
-        SELECT a.appointment_id, a.appointment_date, a.status, u.name AS patient_name
-        FROM appointments a
-        JOIN user u ON a.patient_id = u.userid
-        WHERE a.doctor_id = %s
-        ORDER BY a.appointment_date
-    ''', (doctor_id,))
-    appointments = cursor.fetchall()
+@app.route('/first_aid')
+def first_aid():
+    # Implementation for first aid guide
+    pass
 
-    return render_template('doctor_appointments.html', appointments=appointments)
-
-@app.route('/appointment/<int:appointment_id>/update', methods=['POST'])
-def update_appointment(appointment_id):
-    if 'loggedin' not in session or session['role'] != 'doctor':
-        return redirect(url_for('login'))
-
-    status = request.form.get('status')
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-    # Update appointment status
-    cursor.execute('''
-        UPDATE appointments 
-        SET status = %s 
-        WHERE appointment_id = %s
-    ''', (status, appointment_id))
-    mysql.connection.commit()
-
-    # Fetch patient email and appointment details
-    cursor.execute('''
-        SELECT a.appointment_date, u.email, u.name AS patient_name 
-        FROM appointments a 
-        JOIN user u ON a.patient_id = u.userid 
-        WHERE a.appointment_id = %s
-    ''', (appointment_id,))
-    appointment = cursor.fetchone()
-
-    if appointment:
-        patient_email = appointment['email']
-        appointment_date = appointment['appointment_date']
-        patient_name = appointment['patient_name']
-
-        # Send email notification to the patient
-        subject = "Appointment Status Update"
-        body = f"Dear {patient_name},\n\nYour appointment on {appointment_date} has been updated to '{status}'.\n\nPlease log in to your account for more details."
-        send_email(subject, patient_email, body)
-
-    flash('Appointment updated successfully! A notification has been sent to the patient.', 'success')
-    return redirect(url_for('doctor_appointments'))
-
-# Run App
+@app.route('/forum', methods=['GET', 'POST'])
+def forum():
+    # Implementation for community forum
+    pass# Run App
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

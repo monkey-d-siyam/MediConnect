@@ -27,6 +27,17 @@
                 <a href="/pharmacy" class="btn btn-outline-success m-1">💊 Pharmacy</a>
                 <a href="/doctors" class="btn btn-outline-info m-1">👨‍⚕️ Doctor Network</a>
             </div>
+            <div class="mt-5">
+                <h2 class="fw-bold">Health Education & Emergency Assistance</h2>
+                <p>Explore our features to stay informed and prepared:</p>
+                <div class="d-grid gap-3">
+                    <a href="{{ url_for('health_tips') }}" class="btn btn-primary btn-lg">📚 Health Tips & Articles</a>
+                    <a href="{{ url_for('symptom_checker') }}" class="btn btn-warning btn-lg">🩺 Symptom Checker</a>
+                    <a href="{{ url_for('emergency_contacts') }}" class="btn btn-danger btn-lg">📞 Emergency Contacts</a>
+                    <a href="{{ url_for('first_aid') }}" class="btn btn-success btn-lg">⛑️ First Aid Guide</a>
+                    <a href="{{ url_for('forum') }}" class="btn btn-info btn-lg">💬 Community Forum</a>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock content%}

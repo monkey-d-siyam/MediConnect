@@ -14,6 +14,12 @@
         <button type="submit" class="btn btn-primary">Book Appointment</button>
     </form>
 
+    {% if session['role'] == 'doctor' %}
+    <div class="mt-4">
+        <a href="{{ url_for('manage_appointments') }}" class="btn btn-secondary">Manage Appointments</a>
+    </div>
+    {% endif %}
+
     <h2 class="mt-5">Your Appointments</h2>
     {% if appointments %}
     <table class="table table-bordered">
@@ -29,7 +35,7 @@
             <tr>
                 <td>{{ appointment.doctor_name }}</td>
                 <td>{{ appointment.appointment_date }}</td>
-                <td>{{ appointment.status }}</td>
+                <td>{{ appointment.status if appointment.status else "Pending" }}</td>
             </tr>
             {% endfor %}
         </tbody>
