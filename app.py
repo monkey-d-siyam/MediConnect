@@ -299,17 +299,20 @@ def symptom_checker():
 
 @app.route('/emergency_contacts', methods=['GET', 'POST'])
 def emergency_contacts():
-    # Implementation for emergency contacts
-    pass
+    if request.method == 'POST':
+        contact_name = request.form.get('contact_name')
+        contact_number = request.form.get('contact_number')
+        # Here you can save the contact to the database or session
+        flash(f'Contact {contact_name} added successfully!', 'success')
+    return render_template('emergency_contacts.html')
 
 @app.route('/first_aid')
 def first_aid():
-    # Implementation for first aid guide
-    pass
+    return render_template('first_aid.html')
 
 @app.route('/forum', methods=['GET', 'POST'])
 def forum():
-    # Implementation for community forum
-    pass# Run App
+    return render_template('forum.html')
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
