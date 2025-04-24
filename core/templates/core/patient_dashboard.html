@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard | My MediConnect{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Sidebar -->
+            <div class="card shadow-sm p-3 mb-4">
+                <h5 class="card-title">User Menu</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>{{ session.name }}</strong></li>
+                    <li class="list-group-item">Role: {{ session.role|capitalize }}</li>
+                    <li class="list-group-item">Email: {{ session.email }}</li> <!-- Display email -->
+                    <li class="list-group-item"><a href="{{ url_for('core.patient_profile_setup') }}">Edit Profile</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('core.logout') }}" class="text-danger">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <!-- Main Dashboard -->
+            <div class="card shadow-sm p-4">
+                <h2 class="mb-4">Welcome, {{ session.name }}!</h2>
+                <p class="text-muted">Here is an overview of your account and activity.</p>
+
+                {% if profile %}
+                <div class="card mt-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Patient Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Gender:</strong> {{ profile.gender }}</p>
+                        <p><strong>Blood Group:</strong> {{ profile.blood_group }}</p>
+                        <p><strong>Contact Number:</strong> {{ profile.contact_number }}</p>
+                        <p><strong>Address:</strong> {{ profile.address }}</p>
+                        <p><strong>Medical History:</strong> {{ profile.medical_history }}</p>
+                        <p><strong>Allergies:</strong> {{ profile.allergies }}</p>
+                        <p><strong>Current Medications:</strong> {{ profile.current_medications }}</p>
+                        <p><strong>Emergency Contact:</strong> {{ profile.emergency_contact }}</p>
+                        <p><strong>Prescriptions:</strong> 
+                            {% if profile.prescriptions %}
+                                <a href="{{ profile.prescriptions }}" target="_blank">View Prescriptions</a>
+                            {% else %}
+                                No prescriptions uploaded.
+                            {% endif %}
+                        </p>
+                        <p><strong>Medical Reports:</strong> 
+                            {% if profile.medical_reports %}
+                                <a href="{{ profile.medical_reports }}" target="_blank">View Medical Reports</a>
+                            {% else %}
+                                No medical reports uploaded.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-danger">No profile information available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Search for Doctors</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.search.label(class="form-label") }}
+            {{ form.search(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    
+
+    {% if doctors %}
+    <h3 class="mt-4">Available Doctors</h3>
+    <ul class="list-group">
+        {% for doctor in doctors %}
+        <li class="list-group-item">
+            <strong>{{ doctor.name }}</strong> - {{ doctor.specialization }}
+            <form method="POST" action="{{ url_for('appointment.book_appointment', doctor_id=doctor.userid) }}" class="mt-2">
+                <div class="form-group">
+                    <label for="date">Select Date:</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="start_time">Start Time:</label>
+                    <input type="time" name="start_time" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_time">End Time:</label>
+                    <input type="time" name="end_time" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success mt-2">Book Appointment</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock %}
