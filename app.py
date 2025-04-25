@@ -284,17 +284,45 @@ def health_tips():
         {"title": "Healthy Eating Habits", "url": "https://www.youtube.com/embed/dBnniua6-oM"}
     ]
     return render_template('health_tips.html', articles=articles, videos=videos)
+
+import requests
+import json
+
+LLAMA_API_KEY = "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"
+
 @app.route('/symptom_checker', methods=['GET', 'POST'])
 def symptom_checker():
     suggestion = None
     if request.method == 'POST':
-        symptoms = request.form.get('symptoms').lower()
-        if "fever" in symptoms or "cough" in symptoms:
-            suggestion = "You may have a viral infection. Please consult a doctor if symptoms persist."
-        elif "chest pain" in symptoms or "shortness of breath" in symptoms:
-            suggestion = "This could be a serious condition. Seek immediate medical attention."
-        else:
-            suggestion = "Your symptoms are not recognized. Please consult a doctor for a proper diagnosis."
+        symptoms = request.form.get('symptoms')
+
+        # Use Llama model via OpenRouter API to generate a suggestion
+        try:
+            response = requests.post(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {LLAMA_API_KEY}",
+                    "Content-Type": "application/json",
+                    "X-Title": "MediConnect",  # Optional
+                },
+                data=json.dumps({
+                    "model": "llama/llama-2-13b-chat:free",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": f"I have the following symptoms: {symptoms}. Please provide a medical suggestion."
+                        }
+                    ]
+                })
+            )
+            response_data = response.json()
+            if response.status_code == 200:
+                suggestion = response_data.get("choices", [{}])[0].get("message", {}).get("content", "No suggestion available.")
+            else:
+                suggestion = f"Error: {response_data.get('message', 'Unable to process your request.')}"
+        except Exception as e:
+            suggestion = "Sorry, the AI assistant is currently unavailable. Please try again later."
+
     return render_template('symptom_checker.html', suggestion=suggestion)
 
 @app.route('/emergency_contacts', methods=['GET', 'POST'])
