@@ -1,9 +1,10 @@
 from flask import render_template, request, redirect, url_for, flash, session, Blueprint
+
 from .forms import SearchDoctorForm
 from extensions import mysql
 from MySQLdb.cursors import DictCursor
 
-appointment = Blueprint('appointment', __name__)
+appointment = Blueprint('appointment', __name__, template_folder='templates')
 
 @appointment.route('/appointments', methods=['GET'])
 def appointments():
@@ -52,9 +53,10 @@ def doctor_schedule():
     if 'loggedin' in session and session['role'] == 'doctor':
         cursor = mysql.connection.cursor(DictCursor)
         cursor.execute("""
-            SELECT a.appointment_id, p.name AS patient_name, a.appointment_date, a.status
+            SELECT a.appointment_id, u.name AS patient_name, a.appointment_date, a.status
             FROM appointments a
             JOIN patient_profile p ON a.patient_id = p.patient_id
+            JOIN user u ON p.patient_id = u.userid
             WHERE a.doctor_id = %s
         """, (session['id'],))
         appointments = cursor.fetchall()
