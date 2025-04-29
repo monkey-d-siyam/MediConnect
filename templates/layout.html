@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if title %}
+    <title>MediConnect - {{ title }}</title>
+    {% else %}
+    <title>MediConnect</title>
+    {% endif %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="wrapper d-flex flex-column min-vh-100">
+
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="{{ url_for('core.home') }}">MediConnect</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        {% if 'loggedin' in session %}
+
+
+                        <!-- Appointments Link -->
+                        <li class="nav-item">
+                            {% if session['role'] == 'patient' %}
+                            <a class="nav-link"
+                                href="#">Appointments</a>
+                            {% elif session['role'] == 'doctor' %}
+                            <a class="nav-link" href="{{ url_for('core.doctor_appointments') }}">Appointments</a>
+                            {% endif %}
+                        </li>
+
+                        <!-- Dashboard Link -->
+                        <li class="nav-item">
+                            {% if session['role'] == 'patient' %}
+                            <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
+                            {% elif session['role'] == 'doctor' %}
+                            <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
+                            {% endif %}
+                        </li>
+
+                        <!-- Logout Link -->
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a></li>
+                        {% else %}
+                        <!-- Login and Sign Up Links for Guests -->
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('core.login') }}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('core.register') }}">Sign up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1">
+            <div class="container my-5">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center py-4 bg-white shadow-sm">
+            <p>Your trusted platform for remote healthcare | Safe, Fast, Reliable</p>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
