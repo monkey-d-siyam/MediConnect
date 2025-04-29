@@ -1,7 +1,7 @@
 from flask import Flask
 from extensions import mysql, mail
 from core import core
-from appointment import appointment  # Import the blueprint
+from appointment.routes import appointment  # Import the blueprint
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
