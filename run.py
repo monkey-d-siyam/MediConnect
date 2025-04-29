@@ -20,9 +20,6 @@ mail.init_app(app)
 app.register_blueprint(core)
 app.register_blueprint(appointment, url_prefix='/appointment')
 
-# Debugging: Print registered blueprints and routes
-print("Registered Blueprints:", app.blueprints)
-print(app.url_map)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
