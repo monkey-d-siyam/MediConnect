@@ -32,10 +32,9 @@
                         <!-- Appointments Link -->
                         <li class="nav-item">
                             {% if session['role'] == 'patient' %}
-                            <a class="nav-link"
-                                href="#">Appointments</a>
+                            <a class="nav-link" href="{{ url_for('appointment.patient_appointment_booking') }}">Appointments</a>
                             {% elif session['role'] == 'doctor' %}
-                            <a class="nav-link" href="{{ url_for('core.doctor_appointments') }}">Appointments</a>
+                            <a class="nav-link" href="{{ url_for('appointment.doctor_schedule') }}">Appointments</a>
                             {% endif %}
                         </li>
 
