@@ -3,4 +3,5 @@ venv/
 *.pyc
 *.pyo
 .venv
+.env
 
