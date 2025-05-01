@@ -27,32 +27,48 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         {% if 'loggedin' in session %}
-
-
-                        <!-- Appointments Link -->
-                        <li class="nav-item">
-                            {% if session['role'] == 'patient' %}
-                            <a class="nav-link" href="{{ url_for('appointment.patient_appointment_booking') }}">Appointments</a>
-                            {% elif session['role'] == 'doctor' %}
-                            <a class="nav-link" href="{{ url_for('appointment.doctor_schedule') }}">Appointments</a>
+                            {% if health_tips_page %}
+                                <!-- Show only Appointment, Dashboard, and Logout -->
+                                <li class="nav-item">
+                                    {% if session['role'] == 'patient' %}
+                                    <a class="nav-link" href="{{ url_for('appointment.patient_appointment_booking') }}">Appointments</a>
+                                    {% elif session['role'] == 'doctor' %}
+                                    <a class="nav-link" href="{{ url_for('appointment.doctor_schedule') }}">Appointments</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item">
+                                    {% if session['role'] == 'patient' %}
+                                    <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
+                                    {% elif session['role'] == 'doctor' %}
+                                    <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a></li>
+                            {% else %}
+                                <!-- Default navigation items -->
+                                <li class="nav-item">
+                                    {% if session['role'] == 'patient' %}
+                                    <a class="nav-link" href="{{ url_for('appointment.patient_appointment_booking') }}">Appointments</a>
+                                    {% elif session['role'] == 'doctor' %}
+                                    <a class="nav-link" href="{{ url_for('appointment.doctor_schedule') }}">Appointments</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item">
+                                    {% if session['role'] == 'patient' %}
+                                    <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
+                                    {% elif session['role'] == 'doctor' %}
+                                    <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('education.health_tips') }}">Health Tips & Articles</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a></li>
                             {% endif %}
-                        </li>
-
-                        <!-- Dashboard Link -->
-                        <li class="nav-item">
-                            {% if session['role'] == 'patient' %}
-                            <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
-                            {% elif session['role'] == 'doctor' %}
-                            <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
-                            {% endif %}
-                        </li>
-
-                        <!-- Logout Link -->
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a></li>
                         {% else %}
-                        <!-- Login and Sign Up Links for Guests -->
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('core.login') }}">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('core.register') }}">Sign up</a></li>
+                            <!-- Login and Sign Up Links for Guests -->
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('core.login') }}">Login</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('core.register') }}">Sign up</a></li>
                         {% endif %}
                     </ul>
                 </div>
