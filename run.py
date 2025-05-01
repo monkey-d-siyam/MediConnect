@@ -1,25 +1,41 @@
 from flask import Flask
-from extensions import mysql, mail
+from extensions import mysql, mail, cache  # Import cache from extensions
 from core import core
-from appointment.routes import appointment  # Import the blueprint
+from appointment.routes import appointment
+from education.routes import education
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Create the Flask app
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = os.getenv('SECRET_KEY')
 
 # MySQL config
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'mediconnect_db'
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
 mysql.init_app(app)
 
 # Mail config
 mail.init_app(app)
 
+# Cache config
+cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache'})  # Initialize Cache with app
+
+# YouTube API config
+app.config['YOUTUBE_API_KEY'] = os.getenv('YOUTUBE_API_KEY')
+
+# PubMed API config
+app.config['PUBMED_API_KEY'] = os.getenv('PUBMED_API_KEY')
+
 # Register the blueprints
 app.register_blueprint(core)
 app.register_blueprint(appointment, url_prefix='/appointment')
-
+app.register_blueprint(education, url_prefix='/education')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
