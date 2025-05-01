@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 class="mb-4">Health Tips & Articles</h1>
+
+<!-- Health Tips Videos Section -->
+<h2>Health Tips Videos</h2>
+<div>
+    {% for video in videos %}
+        <div>
+            <h3>{{ video.title }}</h3>
+            <iframe src="{{ video.url }}" frameborder="0" allowfullscreen></iframe>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Latest Articles on Diseases and Outbreaks Section -->
+<h2>Latest Articles on Diseases and Outbreaks</h2>
+<div>
+    {% for article in articles %}
+        <div>
+            <h3><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h3>
+            <p>Source: {{ article.source }}</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
