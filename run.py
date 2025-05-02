@@ -11,7 +11,7 @@ load_dotenv()
 
 # Create the Flask app
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
 
 # MySQL config
 app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
