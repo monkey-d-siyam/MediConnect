@@ -2,15 +2,16 @@ from flask import Flask
 from extensions import mysql, mail, cache  # Import cache from extensions
 from core import core
 from appointment.routes import appointment
-from education.routes import education
 from dotenv import load_dotenv
 import os
+from health_education_and_emergency_assistance.routes import education
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Create the Flask app
 app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
 
 # MySQL config

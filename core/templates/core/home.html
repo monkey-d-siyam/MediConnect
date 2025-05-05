@@ -1,42 +1,48 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="container my-5">
-        <div class="row">
-            <!-- Left Section -->
-            <div class="col-md-6">
-                <h2 class="fw-bold">How MediConnect Helps You!!!!!</h2>
-                <p><strong>Appointments</strong> - Schedule doctor visits easily</p>
-                <p><strong>Virtual Consultation</strong> - Secure video calls with doctors</p>
-                <p><strong>Medical Records</strong> - Access and manage your health data</p>
+<div class="container my-5">
+    <div class="row">
+        <!-- Left Section -->
+        <div class="col-md-6">
+            <h2 class="fw-bold">How MediConnect Helps You!!!!!</h2>
+            <p><strong>Appointments</strong> - Schedule doctor visits easily</p>
+            <p><strong>Virtual Consultation</strong> - Secure video calls with doctors</p>
+            <p><strong>Medical Records</strong> - Access and manage your health data</p>
 
-                <h2 class="fw-bold">For Whom?</h2>
-                <p><strong>Patients</strong> - Get medical advice from anywhere</p>
-                <p><strong>Doctors</strong> - Manage appointments & consultations</p>
-                <p><strong>Pharmacies</strong> - Provide medicine availability updates</p>
-            </div>
+            <h2 class="fw-bold">For Whom?</h2>
+            <p><strong>Patients</strong> - Get medical advice from anywhere</p>
+            <p><strong>Doctors</strong> - Manage appointments & consultations</p>
+            <p><strong>Pharmacies</strong> - Provide medicine availability updates</p>
+        </div>
 
-            <!-- Right Section -->
-            <div class="col-md-6">
-                <h2 class="fw-bold">Why Choose MediConnect?</h2>
-                <p>✔ Connect with doctors remotely</p>
-                <p>✔ Find the nearest pharmacies</p>
-                <p>✔ Get health updates and emergency assistance</p>
+        <!-- Right Section -->
+        <div class="col-md-6">
+            <h2 class="fw-bold">Why Choose MediConnect?</h2>
+            <p>✔ Connect with doctors remotely</p>
+            <p>✔ Find the nearest pharmacies</p>
+            <p>✔ Get health updates and emergency assistance</p>
 
-                <!-- Logos of Healthcare Partners -->
-                <a href="/hospitals" class="btn btn-outline-primary m-1">🏥 Hospitals</a>
-                <a href="/pharmacy" class="btn btn-outline-success m-1">💊 Pharmacy</a>
-                <a href="/doctors" class="btn btn-outline-info m-1">👨‍⚕️ Doctor Network</a>
-            </div>
-            <div class="mt-5">
-                <h2 class="fw-bold">Health Education & Emergency Assistance</h2>
-                <p>Explore our features to stay informed and prepared:</p>
-                {% if user %}
-                    <p>Welcome, {{ user.name }}!</p>
-                {% else %}
-                    <p>Please log in.</p>
-                {% endif %}
-            </div>
+            <!-- Logos of Healthcare Partners -->
+            <a href="/hospitals" class="btn btn-outline-primary m-1">🏥 Hospitals</a>
+            <a href="/pharmacy" class="btn btn-outline-success m-1">💊 Pharmacy</a>
+            <a href="/doctors" class="btn btn-outline-info m-1">👨‍⚕️ Doctor Network</a>
+        </div>
+        <div class="mt-5">
+            <h2 class="fw-bold">Health Education & Emergency Assistance</h2>
+            <p>Explore our features to stay informed and prepared:</p>
+            {% if user %}
+                <p>Welcome, {{ user.name }}!</p>
+            {% else %}
+                <p>Please log in.</p>
+            {% endif %}
         </div>
     </div>
-{% endblock content %}
+</div>
 
+<!-- Symptom Checker Button in the Bottom Left Corner -->
+<div style="position: fixed; bottom: 20px; left: 20px;">
+    <a href="{{ url_for('education.symptom_checker') }}" class="btn btn-lg btn-primary shadow-lg d-flex align-items-center">
+        <i class="bi bi-heart-pulse me-2"></i> Symptom Checker
+    </a>
+</div>
+{% endblock %}

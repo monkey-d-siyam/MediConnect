@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h1 class="mb-4 text-center text-primary">Symptom Checker</h1>
+            <p class="text-muted text-center">Enter your symptoms below to get a quick suggestion.</p>
+
+            {% if error %}
+            <div class="alert alert-danger text-center">{{ error }}</div>
+            {% endif %}
+
+            {% if suggestion %}
+            <div class="alert alert-info text-center">{{ suggestion }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('education.symptom_checker') }}">
+                <div class="mb-3">
+                    <label for="symptoms" class="form-label">Enter your symptoms (comma-separated):</label>
+                    <input type="text" class="form-control" id="symptoms" name="symptoms" placeholder="e.g., fever, cough" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Check Symptoms</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
