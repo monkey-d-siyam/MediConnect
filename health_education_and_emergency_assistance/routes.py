@@ -25,19 +25,31 @@ def symptom_checker():
         )
 
         # Extract the response
-        suggestion = response.text.strip()
+        suggestion_text = response.text.strip()
 
-        if not suggestion:
-            suggestion = "No meaningful response received from the API. Please try again later."
+        if not suggestion_text:
+            suggestion_text = "No meaningful response received from the API. Please try again later."
+
+        # Process the response into a structured format
+        suggestion = [line.strip() for line in suggestion_text.split("\n") if line.strip()]
+        detailed_explanation = (
+            "The suggestions provided are based on the symptoms you entered. "
+            "Please consult a healthcare professional for accurate diagnosis and treatment."
+        )
 
     except Exception as e:
         # Log the error for debugging
         print("Error occurred:", str(e))
         if "503" in str(e):
-            suggestion = "The service is currently unavailable. Please try again later."
+            suggestion = ["The service is currently unavailable. Please try again later."]
         elif "invalid_api_key" in str(e):
-            suggestion = "The API key provided is invalid. Please contact support."
+            suggestion = ["The API key provided is invalid. Please contact support."]
         else:
-            suggestion = f"An error occurred while connecting to the API: {str(e)}"
+            suggestion = [f"An error occurred while connecting to the API: {str(e)}"]
+        detailed_explanation = None
 
-    return render_template('symptom_checker.html', suggestion=suggestion)
+    return render_template(
+        'symptom_checker.html',
+        suggestion=suggestion,
+        detailed_explanation=detailed_explanation
+    )

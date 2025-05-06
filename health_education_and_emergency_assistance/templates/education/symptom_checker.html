@@ -12,7 +12,14 @@
             {% endif %}
 
             {% if suggestion %}
-            <div class="alert alert-info text-center">{{ suggestion }}</div>
+            <div class="alert alert-info">
+                <h4 class="text-center text-success">AI Suggestions</h4>
+                <ul>
+                    {% for point in suggestion %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
             {% endif %}
 
             <form method="POST" action="{{ url_for('education.symptom_checker') }}">
@@ -26,5 +33,14 @@
             </form>
         </div>
     </div>
+
+    {% if detailed_explanation %}
+    <div class="mt-5">
+        <h2 class="text-center text-primary">Detailed Explanation</h2>
+        <div class="alert alert-light border">
+            <p>{{ detailed_explanation }}</p>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
