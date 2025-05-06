@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block title %}Search Pharmacy{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Search for Pharmacies</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="location">Enter Your Location:</label>
+            <input type="text" id="location" name="location" class="form-control" placeholder="e.g., City or ZIP Code" required>
+        </div>
+        <div class="form-group mt-3">
+            <label for="operating_hours">Operating Hours:</label>
+            <select id="operating_hours" name="operating_hours" class="form-control">
+                <option value="any">Any</option>
+                <option value="open_now">Open Now</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Search</button>
+    </form>
+
+    {% if pharmacies %}
+    <h3 class="mt-5">Available Pharmacies</h3>
+    <ul class="list-group">
+        {% for pharmacy in pharmacies %}
+        <li class="list-group-item">
+            <strong>{{ pharmacy.name }}</strong><br>
+            Address: {{ pharmacy.address }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% elif searched %}
+    <p class="mt-5 text-danger">No pharmacies found for the given criteria.</p>
+    {% endif %}
+
+    <!-- Map Section -->
+    <h3 class="mt-5">Pharmacy Locations</h3>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+</div>
+
+<!-- GoMaps API Script -->
+<script src="https://maps.gomaps.pro/maps/api/js?key=AlzaSy5FnOPjl3l-F-s-ro7uWQzkcScv7PDwwjU&callback=initMap" async defer></script>
+<script>
+    function initMap() {
+        // Center the map on Bangladesh
+        const bangladesh = { lat: 23.685, lng: 90.3563 };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 7,
+            center: bangladesh,
+        });
+
+        // Add markers for pharmacies
+        const pharmacies = {{ pharmacies|tojson }};
+        pharmacies.forEach(pharmacy => {
+            const marker = new google.maps.Marker({
+                position: { lat: pharmacy.latitude, lng: pharmacy.longitude },
+                map: map,
+                title: pharmacy.name,
+            });
+
+            // Add info window for each marker
+            const infoWindow = new google.maps.InfoWindow({
+                content: `<strong>${pharmacy.name}</strong><br>${pharmacy.address}`,
+            });
+
+            marker.addListener("click", () => {
+                infoWindow.open(map, marker);
+            });
+        });
+    }
+</script>
+{% endblock %}

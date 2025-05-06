@@ -5,6 +5,7 @@ from appointment.routes import appointment
 from dotenv import load_dotenv
 import os
 from health_education_and_emergency_assistance.routes import education
+from pharmacy.routes import pharmacy
 
 # Load environment variables from .env file
 load_dotenv()
@@ -37,6 +38,7 @@ app.config['PUBMED_API_KEY'] = os.getenv('PUBMED_API_KEY')
 app.register_blueprint(core)
 app.register_blueprint(appointment, url_prefix='/appointment')
 app.register_blueprint(education, url_prefix='/education')
+app.register_blueprint(pharmacy, url_prefix='/pharmacy')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
