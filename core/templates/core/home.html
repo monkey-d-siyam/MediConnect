@@ -1,48 +1,140 @@
 {% extends "layout.html" %}
 {% block content %}
+<style>
+    .hero-bg {
+        background: linear-gradient(120deg, #e0e7ff 0%, #fff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+        padding: 3rem 2rem 2rem 2rem;
+        margin-bottom: 3rem;
+    }
+    .glass-card {
+        background: rgba(255,255,255,0.8);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .glass-card:hover {
+        transform: translateY(-6px) scale(1.03);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79,140,255,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56,232,255,0.18);
+        color: #fff !important;
+    }
+    .section-title {
+        letter-spacing: 1px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    .glass-section {
+        background: rgba(255,255,255,0.7);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+        padding: 2rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+</style>
 <div class="container my-5">
-    <div class="row">
-        <!-- Left Section -->
-        <div class="col-md-6">
-            <h2 class="fw-bold">How MediConnect Helps You!!!!!</h2>
-            <p><strong>Appointments</strong> - Schedule doctor visits easily</p>
-            <p><strong>Virtual Consultation</strong> - Secure video calls with doctors</p>
-            <p><strong>Medical Records</strong> - Access and manage your health data</p>
-
-            <h2 class="fw-bold">For Whom?</h2>
-            <p><strong>Patients</strong> - Get medical advice from anywhere</p>
-            <p><strong>Doctors</strong> - Manage appointments & consultations</p>
-            <p><strong>Pharmacies</strong> - Provide medicine availability updates</p>
+    <!-- Hero Section -->
+    <div class="hero-bg row align-items-center mb-5">
+        <div class="col-md-7">
+            <h1 class="display-4 fw-bold mb-3" style="color:#1a237e;">
+                Welcome to <span class="text-primary">MediConnect</span>
+            </h1>
+            <p class="lead mb-4" style="color:#374151;">
+                Your trusted platform for remote healthcare, connecting patients, doctors, and pharmacies with ease.
+            </p>
+            <div class="mb-4">
+                <a href="/pharmacy/search_pharmacy" class="btn btn-gradient btn-lg me-2 mb-2 shadow"><i class="bi bi-capsule"></i> Find Pharmacy</a>
+                <a href="/hospitals/search_hospital" class="btn btn-warning btn-lg me-2 mb-2 shadow"><i class="bi bi-hospital"></i> Find Hospital</a>
+                <a href="/doctors" class="btn btn-info btn-lg mb-2 shadow"><i class="bi bi-person-badge"></i> Doctor Network</a>
+            </div>
         </div>
-
-        <!-- Right Section -->
-        <div class="col-md-6">
-            <h2 class="fw-bold">Why Choose MediConnect?</h2>
-            <p>✔ Connect with doctors remotely</p>
-            <p>✔ Find the nearest pharmacies</p>
-            <p>✔ Get health updates and emergency assistance</p>
-
-            <!-- Add a Search Pharmacies Button -->
-            <a href="/pharmacy/search_pharmacy" class="btn btn-outline-success m-1">🔍 Pharmacy</a>
-            <!-- Add a Search Hospitals Button -->
-            <a href="/hospitals/search_hospital" class="btn btn-outline-warning m-1">🏥 Hospital</a>
-            <a href="/doctors" class="btn btn-outline-info m-1">👨‍⚕️ Doctor Network</a>
+        <div class="col-md-5 text-center">
+            <img src="https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&w=600&q=80"
+            alt="Connecting People"
+            class="img-fluid rounded shadow"
+            style="max-height: 320px; border: 6px solid #fff;">
         </div>
-        <div class="mt-5">
-            <h2 class="fw-bold">Health Education & Emergency Assistance</h2>
-            <p>Explore our features to stay informed and prepared:</p>
-            {% if user %}
-                <p>Welcome, {{ user.name }}!</p>
-            {% else %}
-                <p>Please log in.</p>
-            {% endif %}
+    </div>
+
+    <!-- Features Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="glass-card card h-100 border-0">
+                <div class="card-body text-center">
+                    <div class="feature-icon text-primary"><i class="bi bi-calendar-check"></i></div>
+                    <h5 class="card-title fw-bold mt-2">Appointments</h5>
+                    <p class="card-text">Schedule doctor visits easily and manage your appointments online.</p>
+                </div>
+            </div>
         </div>
+        <div class="col-md-4">
+            <div class="glass-card card h-100 border-0">
+                <div class="card-body text-center">
+                    <div class="feature-icon text-success"><i class="bi bi-camera-video"></i></div>
+                    <h5 class="card-title fw-bold mt-2">Virtual Consultation</h5>
+                    <p class="card-text">Secure video calls with doctors from the comfort of your home.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card card h-100 border-0">
+                <div class="card-body text-center">
+                    <div class="feature-icon text-warning"><i class="bi bi-folder2-open"></i></div>
+                    <h5 class="card-title fw-bold mt-2">Medical Records</h5>
+                    <p class="card-text">Access and manage your health data securely anytime, anywhere.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- For Whom Section -->
+    <div class="glass-section mb-5">
+        <h2 class="section-title mb-3">For Whom?</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-2">
+                <p><i class="bi bi-person text-primary"></i> <strong>Patients</strong> - Get medical advice from anywhere</p>
+            </div>
+            <div class="col-md-4 mb-2">
+                <p><i class="bi bi-person-badge text-success"></i> <strong>Doctors</strong> - Manage appointments & consultations</p>
+            </div>
+            <div class="col-md-4 mb-2">
+                <p><i class="bi bi-capsule text-warning"></i> <strong>Pharmacies</strong> - Provide medicine availability updates</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Education & Emergency Assistance -->
+    <div class="glass-section mb-5">
+        <h2 class="section-title mb-3">Health Education & Emergency Assistance</h2>
+        <p>Explore our features to stay informed and prepared:</p>
+        {% if user %}
+            <p>Welcome, {{ user.name }}!</p>
+        {% else %}
+            <p>Please log in.</p>
+        {% endif %}
     </div>
 </div>
 
 <!-- Symptom Checker Button in the Bottom Left Corner -->
-<div style="position: fixed; bottom: 20px; left: 20px;">
-    <a href="{{ url_for('education.symptom_checker') }}" class="btn btn-lg btn-primary shadow-lg d-flex align-items-center">
+<div style="position: fixed; bottom: 20px; left: 20px; z-index: 999;">
+    <a href="{{ url_for('education.symptom_checker') }}" class="btn btn-lg btn-gradient shadow-lg d-flex align-items-center">
         <i class="bi bi-heart-pulse me-2"></i> Symptom Checker
     </a>
 </div>
