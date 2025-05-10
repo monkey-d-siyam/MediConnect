@@ -5,80 +5,67 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Search for Pharmacies</h2>
-    <form method="POST">
+    <form id="searchForm">
         <div class="form-group">
-            <label for="location">Enter Your Location:</label>
-            <input type="text" id="location" name="location" class="form-control" placeholder="e.g., City or ZIP Code" required>
-        </div>
-        <div class="form-group mt-3">
-            <label for="operating_hours">Operating Hours:</label>
-            <select id="operating_hours" name="operating_hours" class="form-control">
-                <option value="any">Any</option>
-                <option value="open_now">Open Now</option>
-            </select>
+            <label for="query">Search Pharmacy Location:</label>
+            <input type="text" id="query" name="query" class="form-control" placeholder="e.g., pharmacy near Dhaka" autocomplete="off" required>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Search</button>
     </form>
 
-    {% if pharmacies %}
-    <h3 class="mt-5">Available Pharmacies</h3>
-    <ul class="list-group">
-        {% for pharmacy in pharmacies %}
-        <li class="list-group-item">
-            <strong>{{ pharmacy.name }}</strong><br>
-            Address: {{ pharmacy.address }}
-        </li>
-        {% endfor %}
-    </ul>
-    {% elif searched %}
-    <p class="mt-5 text-danger">No pharmacies found for the given criteria.</p>
-    {% endif %}
-
     <!-- Map Section -->
-    <h3 class="mt-5">Pharmacy Locations</h3>
+    <h3 class="mt-5">Pharmacy Location</h3>
     <div id="map" style="height: 500px; width: 100%;"></div>
 </div>
 
-<!-- GoMaps API Script -->
-<script src="https://maps.gomaps.pro/maps/api/js?key=AlzaSy5FnOPjl3l-F-s-ro7uWQzkcScv7PDwwjU&callback=initMap" async defer></script>
+<!-- Leaflet.js -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
-    function initMap() {
-        // Center the map on Bangladesh
-        const bangladesh = { lat: 23.685, lng: 90.3563 };
-        const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 7,
-            center: bangladesh,
-        });
+    // Initialize the map centered on Dhaka
+    const map = L.map('map').setView([23.8103, 90.4125], 12);
 
-        // Add markers for pharmacies
-        const pharmacies = {{ pharmacies|tojson }};
-        if (pharmacies.length === 0) {
-            console.warn("No pharmacies found to display on the map.");
-            return;
-        }
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-        pharmacies.forEach(pharmacy => {
-            const marker = new google.maps.Marker({
-                position: { lat: pharmacy.latitude, lng: pharmacy.longitude },
-                map: map,
-                title: pharmacy.name,
-            });
+    // Add a marker for Dhaka
+    const defaultMarker = L.marker([23.8103, 90.4125]).addTo(map)
+        .bindPopup('Dhaka')
+        .openPopup();
 
-            // Add info window for each marker
-            const infoWindow = new google.maps.InfoWindow({
-                content: `<strong>${pharmacy.name}</strong><br>${pharmacy.address}`,
-            });
+    // Handle form submission
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const query = document.getElementById("query").value;
+        searchLocation(query);
+    });
 
-            marker.addListener("click", () => {
-                infoWindow.open(map, marker);
-            });
-        });
+    // Function to search for a location using OpenStreetMap's Nominatim API
+    function searchLocation(query) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
 
-        // Center the map on the first pharmacy if available
-        if (pharmacies.length > 0) {
-            map.setCenter({ lat: pharmacies[0].latitude, lng: pharmacies[0].longitude });
-            map.setZoom(12);
-        }
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const result = data[0];
+                    const lat = parseFloat(result.lat);
+                    const lon = parseFloat(result.lon);
+
+                    // Center the map on the searched location
+                    map.setView([lat, lon], 15);
+
+                    // Add a marker for the searched location
+                    L.marker([lat, lon]).addTo(map)
+                        .bindPopup(result.display_name)
+                        .openPopup();
+                } else {
+                    alert("Location not found. Please try again.");
+                }
+            })
+            .catch(error => console.error("Error fetching location:", error));
     }
 </script>
 {% endblock %}
