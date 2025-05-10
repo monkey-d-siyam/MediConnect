@@ -1,24 +1,74 @@
 {% extends "layout.html" %}
-
 {% block title %}Search Pharmacy{% endblock %}
-
 {% block content %}
-<div class="container mt-5">
-    <h2>Search for Pharmacies</h2>
-    <form id="searchForm">
-        <div class="form-group">
-            <label for="query">Search Pharmacy Location:</label>
-            <input type="text" id="query" name="query" class="form-control" placeholder="e.g., pharmacy near Dhaka" autocomplete="off" required>
+<style>
+    .search-bg {
+        background: linear-gradient(120deg, #e0e7ff 0%, #fff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+        padding: 2.5rem 1.5rem 2rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .glass-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79,140,255,0.10);
+    }
+    .search-icon {
+        font-size: 2.5rem;
+        color: #4f8cff;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79,140,255,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56,232,255,0.18);
+        color: #fff !important;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #1a237e;
+    }
+</style>
+<div class="container my-5">
+    <div class="search-bg">
+        <div class="glass-card card shadow-lg border-0">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <span class="search-icon"><i class="bi bi-capsule"></i></span>
+                </div>
+                <h1 class="mb-3 text-center text-primary fw-bold">Search for Pharmacies</h1>
+                <p class="text-muted text-center mb-4">Find pharmacies near you using our smart location search.</p>
+                <form id="searchForm">
+                    <div class="mb-3">
+                        <label for="query" class="form-label">Search Pharmacy Location:</label>
+                        <input type="text" id="query" name="query" class="form-control form-control-lg" placeholder="e.g., pharmacy near Dhaka" autocomplete="off" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-gradient btn-lg shadow"><i class="bi bi-search me-2"></i>Search</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Search</button>
-    </form>
-
-    <!-- Map Section -->
-    <h3 class="mt-5">Pharmacy Location</h3>
-    <div id="map" style="height: 500px; width: 100%;"></div>
+        <div class="mt-5">
+            <h3 class="text-center text-primary fw-bold mb-3">Pharmacy Location</h3>
+            <div id="map" style="height: 500px; width: 100%; border-radius: 1rem; box-shadow: 0 2px 16px rgba(79,140,255,0.08);"></div>
+        </div>
+    </div>
 </div>
-
-<!-- Leaflet.js -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
