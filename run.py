@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 from health_education_and_emergency_assistance.routes import education
 from pharmacy.routes import pharmacy
+from hospitals.routes import hospitals
 
 # Load environment variables from .env file
 load_dotenv()
@@ -39,6 +40,7 @@ app.register_blueprint(core)
 app.register_blueprint(appointment, url_prefix='/appointment')
 app.register_blueprint(education, url_prefix='/education')
 app.register_blueprint(pharmacy, url_prefix='/pharmacy')
+app.register_blueprint(hospitals, url_prefix='/hospitals')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block title %}Search Hospital{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Search for Hospitals</h2>
+    <form id="searchForm">
+        <div class="form-group">
+            <label for="query">Search Hospital Location:</label>
+            <input type="text" id="query" name="query" class="form-control" placeholder="e.g., hospital near Dhaka" autocomplete="off" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Search</button>
+    </form>
+    <h3 class="mt-5">Hospital Location</h3>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+</div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    // Initialize the map centered on Dhaka
+    const map = L.map('map').setView([23.8103, 90.4125], 12);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add a marker for Dhaka
+    const defaultMarker = L.marker([23.8103, 90.4125]).addTo(map)
+        .bindPopup('Dhaka')
+        .openPopup();
+
+    // Handle form submission
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const query = document.getElementById("query").value;
+        searchLocation(query);
+    });
+
+    // Function to search for a location using OpenStreetMap's Nominatim API
+    function searchLocation(query) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const result = data[0];
+                    const lat = parseFloat(result.lat);
+                    const lon = parseFloat(result.lon);
+
+                    // Center the map on the searched location
+                    map.setView([lat, lon], 15);
+
+                    // Add a marker for the searched location
+                    L.marker([lat, lon]).addTo(map)
+                        .bindPopup(result.display_name)
+                        .openPopup();
+                } else {
+                    alert("Location not found. Please try again.");
+                }
+            })
+            .catch(error => console.error("Error fetching location:", error));
+    }
+</script>
+{% endblock %}
