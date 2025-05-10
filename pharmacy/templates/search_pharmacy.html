@@ -52,6 +52,11 @@
 
         // Add markers for pharmacies
         const pharmacies = {{ pharmacies|tojson }};
+        if (pharmacies.length === 0) {
+            console.warn("No pharmacies found to display on the map.");
+            return;
+        }
+
         pharmacies.forEach(pharmacy => {
             const marker = new google.maps.Marker({
                 position: { lat: pharmacy.latitude, lng: pharmacy.longitude },
@@ -68,6 +73,12 @@
                 infoWindow.open(map, marker);
             });
         });
+
+        // Center the map on the first pharmacy if available
+        if (pharmacies.length > 0) {
+            map.setCenter({ lat: pharmacies[0].latitude, lng: pharmacies[0].longitude });
+            map.setZoom(12);
+        }
     }
 </script>
 {% endblock %}

@@ -1,15 +1,15 @@
 from flask import Blueprint, render_template, request, flash
 
+# Define the pharmacy blueprint
 pharmacy = Blueprint('pharmacy', __name__, template_folder='templates')
 
-@pharmacy.route('/search_pharmacy', methods=['GET', 'POST'])
+@pharmacy.route('/search_pharmacy', methods=['GET', 'POST'])  # Corrected decorator
 def search_pharmacy():
     pharmacies = []
     searched = False
 
     if request.method == 'POST':
         location = request.form.get('location')
-        operating_hours = request.form.get('operating_hours')
 
         # Hardcoded pharmacy data
         all_pharmacies = [
@@ -18,10 +18,10 @@ def search_pharmacy():
             {"name": "Pharmacy C", "address": "Rajshahi, Bangladesh", "latitude": 24.3636, "longitude": 88.6241},
         ]
 
-        # Filter pharmacies based on location (basic filtering for demonstration)
+        # Filter pharmacies based on location or name
         pharmacies = [
             pharmacy for pharmacy in all_pharmacies
-            if location.lower() in pharmacy["address"].lower()
+            if location.lower() in pharmacy["address"].lower() or location.lower() in pharmacy["name"].lower()
         ]
         searched = True
 
