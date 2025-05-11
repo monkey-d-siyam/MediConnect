@@ -5,17 +5,18 @@ from wtforms import StringField, PasswordField, SubmitField, SelectField, Intege
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 from werkzeug.security import check_password_hash, generate_password_hash
 from MySQLdb.cursors import DictCursor
-from .forms import LoginForm, RegistrationForm, DoctorProfileForm, PatientProfileForm
+from .forms import LoginForm, RegistrationForm, DoctorProfileForm, PatientProfileForm, PharmacyProfileForm, OrderMedicineForm
 from extensions import mysql 
 import os
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = 'uploads/'  # Define the upload folder
 
-
 @core.route('/')
 def home():
-    user = session.get('user')  # Assuming 'user' is stored in the session
+    if 'loggedin' in session and session['role'] == 'pharmacy':
+        return redirect(url_for('core.pharmacy_dashboard'))
+    user = session.get('user')
     return render_template('core/home.html', title='Home', user=user)
 
 @core.route('/about')
@@ -40,6 +41,14 @@ def login():
                 return redirect(url_for('core.doctor_dashboard'))
             elif session['role'] == 'patient':
                 return redirect(url_for('core.patient_dashboard'))
+            elif session['role'] == 'pharmacy':
+                # Check if pharmacy profile exists, if not, redirect to setup
+                cursor2 = mysql.connection.cursor(DictCursor)
+                cursor2.execute("SELECT * FROM pharmacy_profile WHERE user_id = %s", (session['id'],))
+                profile = cursor2.fetchone()
+                if not profile:
+                    return redirect(url_for('core.pharmacy_profile_setup'))
+                return redirect(url_for('core.pharmacy_dashboard'))
             else:
                 return redirect(url_for('core.home'))
 
@@ -56,6 +65,16 @@ def register():
                        (form.name.data, form.email.data, hashed_password, form.role.data))
         mysql.connection.commit()
         flash('Account created successfully!', 'success')
+        # Auto-login and redirect to profile setup for pharmacy
+        if form.role.data == 'pharmacy':
+            cursor.execute("SELECT * FROM user WHERE email = %s", (form.email.data,))
+            account = cursor.fetchone()
+            session['loggedin'] = True
+            session['id'] = account[0]  # userid
+            session['name'] = account[1]
+            session['role'] = account[4]
+            session['email'] = account[2]
+            return redirect(url_for('core.pharmacy_profile_setup'))
         return redirect(url_for('core.login'))
     return render_template('core/register.html', title='Register', form=form)
 
@@ -63,7 +82,6 @@ def register():
 def doctor_profile_setup():
     if 'loggedin' in session and session['role'] == 'doctor':
         cursor = mysql.connection.cursor(DictCursor)
-
         # Check if the doctor profile already exists
         cursor.execute("SELECT * FROM doctor_profile WHERE doctor_id = %s", (session['id'],))
         doctor_profile = cursor.fetchone()
@@ -208,4 +226,93 @@ def doctor_appointments():
 def logout():
     session.clear()
     flash('You have been logged out.', 'success')
+    return redirect(url_for('core.login'))
+
+@core.route('/pharmacy_profile_setup', methods=['GET', 'POST'])
+def pharmacy_profile_setup():
+    if 'loggedin' in session and session['role'] == 'pharmacy':
+        cursor = mysql.connection.cursor(DictCursor)
+        cursor.execute("SELECT * FROM pharmacy_profile WHERE user_id = %s", (session['id'],))
+        profile = cursor.fetchone()
+        form = PharmacyProfileForm(data=profile)
+        if request.method == 'POST':
+            print("POST received")
+        if form.validate_on_submit():
+            print("Form validated")
+            if profile:
+                cursor.execute("""
+                    UPDATE pharmacy_profile SET pharmacy_name=%s, address=%s, contact_number=%s, email=%s, opening_hours=%s
+                    WHERE user_id=%s
+                """, (form.pharmacy_name.data, form.address.data, form.contact_number.data, form.email.data, form.opening_hours.data, session['id']))
+                flash('Profile updated successfully!', 'success')
+            else:
+                cursor.execute("""
+                    INSERT INTO pharmacy_profile (user_id, pharmacy_name, address, contact_number, email, opening_hours)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, (session['id'], form.pharmacy_name.data, form.address.data, form.contact_number.data, form.email.data, form.opening_hours.data))
+                flash('Profile created successfully!', 'success')
+            mysql.connection.commit()
+            return redirect(url_for('core.pharmacy_profile_setup'))
+        else:
+            if request.method == 'POST':
+                print("Form errors:", form.errors)
+        return render_template('core/pharmacy_profile_setup.html', form=form)
+    return redirect(url_for('core.login'))
+
+@core.route('/pharmacy_dashboard')
+def pharmacy_dashboard():
+    if 'loggedin' in session and session['role'] == 'pharmacy':
+        return render_template('core/pharmacy_dashboard.html')
+    return redirect(url_for('core.login'))
+
+@core.route('/pharmacies')
+def list_pharmacies():
+    if 'loggedin' in session and session['role'] == 'patient':
+        cursor = mysql.connection.cursor(DictCursor)
+        cursor.execute("SELECT pharmacy_id, pharmacy_name, address FROM pharmacy_profile")
+        pharmacies = cursor.fetchall()
+        return render_template('core/pharmacies.html', pharmacies=pharmacies)
+    return redirect(url_for('core.login'))
+
+@core.route('/pharmacy/<int:pharmacy_id>/medicines')
+def pharmacy_medicines(pharmacy_id):
+    if 'loggedin' in session and session['role'] == 'patient':
+        cursor = mysql.connection.cursor(DictCursor)
+        cursor.execute("SELECT * FROM pharmacy_inventory WHERE pharmacy_id = %s", (pharmacy_id,))
+        medicines = cursor.fetchall()
+        return render_template('core/pharmacy_medicines.html', medicines=medicines, pharmacy_id=pharmacy_id)
+    return redirect(url_for('core.login'))
+
+@core.route('/pharmacy/<int:pharmacy_id>/order/<int:medicine_id>', methods=['GET', 'POST'])
+def order_medicine(pharmacy_id, medicine_id):
+    if 'loggedin' in session and session['role'] == 'patient':
+        form = OrderMedicineForm()
+        cursor = mysql.connection.cursor(DictCursor)
+        cursor.execute("SELECT * FROM pharmacy_inventory WHERE inventory_id = %s AND pharmacy_id = %s", (medicine_id, pharmacy_id))
+        medicine = cursor.fetchone()
+        if not medicine:
+            flash('Medicine not found.', 'danger')
+            return redirect(url_for('core.pharmacy_medicines', pharmacy_id=pharmacy_id))
+        if form.validate_on_submit():
+            cursor.execute("""
+                INSERT INTO medicine_requests (patient_id, pharmacy_id, medicine_name, quantity, delivery_method)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (session['id'], pharmacy_id, medicine['medicine_name'], form.quantity.data, form.delivery_method.data))
+            mysql.connection.commit()
+            flash('Order placed successfully!', 'success')
+            return redirect(url_for('core.patient_dashboard'))
+        return render_template('core/order_medicine.html', form=form, medicine=medicine)
+    return redirect(url_for('core.login'))
+
+@core.route('/pharmacy/orders')
+def pharmacy_orders():
+    if 'loggedin' in session and session['role'] == 'pharmacy':
+        cursor = mysql.connection.cursor(DictCursor)
+        cursor.execute("""
+            SELECT * FROM medicine_requests WHERE pharmacy_id = (
+                SELECT pharmacy_id FROM pharmacy_profile WHERE user_id = %s
+            ) AND status = 'pending'
+        """, (session['id'],))
+        orders = cursor.fetchall()
+        return render_template('core/pharmacy_orders.html', orders=orders)
     return redirect(url_for('core.login'))

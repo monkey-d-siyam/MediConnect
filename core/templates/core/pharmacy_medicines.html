@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block title %}Pharmacy Medicines{% endblock %}
+{% block content %}
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+        backdrop-filter: blur(2px);
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .glass-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79,140,255,0.10);
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79,140,255,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56,232,255,0.18);
+        color: #fff !important;
+    }
+</style>
+<div class="container mt-5">
+    <h2 class="mb-4">Available Medicines</h2>
+    <a href="{{ url_for('core.list_pharmacies') }}" class="btn btn-link mb-3">&larr; Back to Pharmacies</a>
+    <div class="row">
+        {% for medicine in medicines %}
+        <div class="col-md-6 mb-4">
+            <div class="card glass-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <span class="d-block mb-2" style="font-size:2.5rem; color:#4f8cff;">
+                        <i class="bi bi-capsule"></i>
+                    </span>
+                    <h5 class="card-title fw-bold">{{ medicine.medicine_name }}</h5>
+                    <p class="card-text mb-1"><strong>Stock:</strong> {{ medicine.stock }}</p>
+                    <p class="card-text mb-3"><strong>Price:</strong> {{ medicine.price }}</p>
+                    <a href="{{ url_for('core.order_medicine', pharmacy_id=pharmacy_id, medicine_id=medicine.inventory_id) }}" class="btn btn-gradient w-100">Order</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-warning text-center shadow-sm glass-card">
+                <p class="mb-0 text-danger">No medicines found for this pharmacy.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

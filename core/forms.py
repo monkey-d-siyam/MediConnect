@@ -9,7 +9,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    role = SelectField('Role', choices=[('doctor', 'Doctor'), ('patient', 'Patient')], validators=[DataRequired()])
+    role = SelectField('Role', choices=[('doctor', 'Doctor'), ('patient', 'Patient'), ('pharmacy', 'Pharmacy')], validators=[DataRequired()])
     submit = SubmitField('Register')
 
 class LoginForm(FlaskForm):
@@ -40,3 +40,21 @@ class PatientProfileForm(FlaskForm):
     prescriptions = FileField('Upload Prescriptions (PDF)', validators=[FileAllowed(['pdf'], 'PDF files only!')])
     medical_reports = FileField('Upload Medical Reports (PDF)', validators=[FileAllowed(['pdf'], 'PDF files only!')])
     submit = SubmitField('Save Changes')
+
+class PharmacyProfileForm(FlaskForm):
+    pharmacy_name = StringField('Pharmacy Name', validators=[DataRequired()])
+    address = StringField('Address', validators=[DataRequired()])
+    contact_number = StringField('Contact Number', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    opening_hours = StringField('Opening Hours', validators=[DataRequired()])
+    submit = SubmitField('Save Profile')
+
+class InventoryForm(FlaskForm):
+    medicine_name = StringField('Medicine Name', validators=[DataRequired()])
+    stock = IntegerField('Stock', validators=[DataRequired(), NumberRange(min=0)])
+    price = StringField('Price', validators=[DataRequired()])
+    submit = SubmitField('Add/Update Medicine')
+class OrderMedicineForm(FlaskForm):
+    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    delivery_method = SelectField('Delivery Method', choices=[('delivery', 'Delivery'), ('pickup', 'Pickup')], validators=[DataRequired()])
+    submit = SubmitField('Order')

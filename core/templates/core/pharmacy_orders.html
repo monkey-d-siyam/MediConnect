@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block title %}Medicine Orders{% endblock %}
+{% block content %}
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+        backdrop-filter: blur(2px);
+        border: none;
+    }
+    .table.glass-table {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        overflow: hidden;
+        box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+    }
+    .table.glass-table th, .table.glass-table td {
+        background: transparent !important;
+    }
+</style>
+<div class="container mt-5">
+    <div class="glass-card p-4">
+        <h2 class="mb-4">New Medicine Orders</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered glass-table">
+                <thead>
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Medicine</th>
+                        <th>Quantity</th>
+                        <th>Delivery Method</th>
+                        <th>Status</th>
+                        <th>Requested At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.patient_id }}</td>
+                        <td>{{ order.medicine_name }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.delivery_method|capitalize }}</td>
+                        <td>{{ order.status|capitalize }}</td>
+                        <td>{{ order.request_time }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-danger">No new orders.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

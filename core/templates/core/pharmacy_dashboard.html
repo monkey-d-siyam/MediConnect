@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+        backdrop-filter: blur(2px);
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .glass-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79,140,255,0.10);
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79,140,255,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56,232,255,0.18);
+        color: #fff !important;
+    }
+</style>
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary fw-bold">Pharmacy Dashboard</h2>
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card glass-card h-100 shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-geo-alt-fill text-info" style="font-size:2rem;"></i>
+                    <h5 class="card-title mt-2">Pharmacy Search</h5>
+                    <a href="{{ url_for('pharmacy.search_pharmacy') }}" class="btn btn-gradient btn-primary">View Search Page</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card glass-card h-100 shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-capsule text-success" style="font-size:2rem;"></i>
+                    <h5 class="card-title mt-2">Manage Inventory</h5>
+                    <a href="{{ url_for('pharmacy.manage_inventory') }}" class="btn btn-gradient btn-primary">Manage Inventory</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card glass-card h-100 shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-truck text-primary" style="font-size:2rem;"></i>
+                    <h5 class="card-title mt-2">Medicine Delivery/Pickup Orders</h5>
+                    <a href="{{ url_for('core.pharmacy_orders') }}" class="btn btn-gradient btn-primary">View Orders</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card glass-card h-100 shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-currency-dollar text-warning" style="font-size:2rem;"></i>
+                    <h5 class="card-title mt-2">Price Comparison</h5>
+                    <a href="#" class="btn btn-gradient disabled">Coming Soon</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

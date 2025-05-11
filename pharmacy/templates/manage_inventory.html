@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+    }
+    .glass-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79,140,255,0.10);
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79,140,255,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56,232,255,0.18);
+        color: #fff !important;
+    }
+    .table.glass-table {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        overflow: hidden;
+        box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+    }
+    .table.glass-table th, .table.glass-table td {
+        background: transparent !important;
+    }
+    .form-control {
+        border-radius: 0.75rem;
+        border: 1px solid #b6d0ff;
+        background: rgba(255,255,255,0.9);
+        box-shadow: 0 1px 4px rgba(79,140,255,0.04);
+        transition: border-color 0.2s;
+    }
+    .form-control:focus {
+        border-color: #4f8cff;
+        box-shadow: 0 0 0 2px #b6d0ff;
+    }
+</style>
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary fw-bold">Manage Inventory</h2>
+    <form method="POST" class="mb-4 glass-card p-4">
+        {{ form.hidden_tag() }}
+        <div class="row g-3">
+            <div class="col-md-4">
+                {{ form.medicine_name.label(class="form-label") }}
+                {{ form.medicine_name(class="form-control") }}
+            </div>
+            <div class="col-md-3">
+                {{ form.stock.label(class="form-label") }}
+                {{ form.stock(class="form-control") }}
+            </div>
+            <div class="col-md-3">
+                {{ form.price.label(class="form-label") }}
+                {{ form.price(class="form-control") }}
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                {{ form.submit(class="btn btn-gradient w-100") }}
+            </div>
+        </div>
+    </form>
+    <h4 class="mb-3">Current Inventory</h4>
+    <div class="glass-card p-3">
+        <table class="table table-bordered table-hover glass-table mb-0">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for med in inventory %}
+                <tr>
+                    <td>{{ med[1] }}</td>
+                    <td>{{ med[2] }}</td>
+                    <td>{{ med[3] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center">No medicines in inventory.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

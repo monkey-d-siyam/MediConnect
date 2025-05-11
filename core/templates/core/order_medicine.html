@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block title %}Order Medicine{% endblock %}
+{% block content %}
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+        backdrop-filter: blur(2px);
+        border: none;
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79,140,255,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56,232,255,0.18);
+        color: #fff !important;
+    }
+    .form-control, .form-select {
+        border-radius: 0.75rem;
+        border: 1px solid #b6d0ff;
+        background: rgba(255,255,255,0.9);
+        box-shadow: 0 1px 4px rgba(79,140,255,0.04);
+        transition: border-color 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #4f8cff;
+        box-shadow: 0 0 0 2px #b6d0ff;
+    }
+</style>
+<div class="container mt-5">
+    <div class="glass-card p-4 mx-auto" style="max-width:500px;">
+        <h2 class="mb-4">Order Medicine: {{ medicine.medicine_name }}</h2>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                <label class="form-label">Medicine Name</label>
+                <input type="text" class="form-control" value="{{ medicine.medicine_name }}" readonly>
+            </div>
+            <div class="mb-3">
+                {{ form.quantity.label(class="form-label") }}
+                {{ form.quantity(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.delivery_method.label(class="form-label") }}
+                {{ form.delivery_method(class="form-select") }}
+            </div>
+            {{ form.submit(class="btn btn-gradient w-100") }}
+        </form>
+    </div>
+</div>
+{% endblock %}

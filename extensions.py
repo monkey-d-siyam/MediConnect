@@ -2,8 +2,10 @@
 from flask_mysqldb import MySQL
 from flask_mail import Mail
 from flask_caching import Cache
+from flask_socketio import SocketIO
 
 mysql = MySQL()
+socketio = SocketIO()
 
 def init_app(app):
     app.config['MYSQL_HOST'] = 'localhost'
