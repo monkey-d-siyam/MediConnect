@@ -43,22 +43,43 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         {% if 'loggedin' in session %}
-                            <!-- Logged-in user navigation -->
-                            <li class="nav-item">
-                                {% if session['role'] == 'patient' %}
-                                <a class="nav-link" href="{{ url_for('appointment.patient_appointment_booking') }}">Appointments</a>
-                                <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
-                                {% elif session['role'] == 'doctor' %}
-                                <a class="nav-link" href="{{ url_for('appointment.doctor_schedule') }}">Appointments</a>
-                                <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
-                                {% endif %}
-                            </li>
-                            <li class="nav-item">
-                               <a class="nav-link" href="{{ url_for('education.symptom_checker') }}">Health Tips & Articles</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
-                            </li>
+                            {% if session['role'] == 'patient' %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.list_pharmacies') }}">Pharmacy</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('appointment.patient_appointment_booking') }}">Appointments</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('education.symptom_checker') }}">Health Tips & Articles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
+                                </li>
+                            {% elif session['role'] == 'pharmacy' %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.pharmacy_dashboard') }}">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
+                                </li>
+                            {% elif session['role'] == 'doctor' %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('appointment.doctor_schedule') }}">Appointments</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('education.symptom_checker') }}">Health Tips & Articles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
+                                </li>
+                            {% endif %}
                         {% else %}
                             <!-- Guest navigation -->
                             <li class="nav-item">
