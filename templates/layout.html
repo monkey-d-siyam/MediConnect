@@ -41,7 +41,9 @@
                                     <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
                                     {% elif session['role'] == 'doctor' %}
                                     <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
+                                    
                                     {% endif %}
+                                    
                                 </li>
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a></li>
                             {% else %}
@@ -62,6 +64,11 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url_for('education.health_tips') }}">Health Tips & Articles</a>
+                                </li>
+                                <li class="nav-item">
+                                    {% if session['role'] in ['doctor', 'patient'] %}
+                                        <a class="nav-link" href="{{ url_for('consultation.start_consultation') }}">Video Consultation</a>
+                                    {% endif %}
                                 </li>
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a></li>
                             {% endif %}
