@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .symptom-bg {
+        background: linear-gradient(120deg, #e0e7ff 0%, #fff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+        padding: 2.5rem 1.5rem 2rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .glass-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79,140,255,0.10);
+    }
+    .symptom-icon {
+        font-size: 2.5rem;
+        color: #4f8cff;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79,140,255,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56,232,255,0.18);
+        color: #fff !important;
+    }
+    .ai-suggestion {
+        background: linear-gradient(90deg, #e3f2fd 0%, #f1f8e9 100%);
+        border-radius: 1rem;
+        border: 1px solid #b3e5fc;
+        box-shadow: 0 2px 8px rgba(56,232,255,0.08);
+        padding: 1.2rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .ai-suggestion h4 {
+        color: #388e3c;
+        font-weight: 700;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #1a237e;
+    }
+    .detailed-explanation {
+        background: rgba(255,255,255,0.95);
+        border-radius: 1rem;
+        border: 1px solid #e3e3e3;
+        box-shadow: 0 2px 8px rgba(56,232,255,0.06);
+        padding: 1.2rem 1rem;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="symptom-bg">
+        <div class="glass-card card shadow-lg border-0">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <span class="symptom-icon"><i class="bi bi-heart-pulse-fill"></i></span>
+                </div>
+                <h1 class="mb-3 text-center text-primary fw-bold">Symptom Checker</h1>
+                <p class="text-muted text-center mb-4">Describe your symptoms and get instant AI-powered health suggestions.</p>
+
+                {% if error %}
+                <div class="alert alert-danger text-center">{{ error }}</div>
+                {% endif %}
+
+                {% if suggestion %}
+                <div class="ai-suggestion mb-4">
+                    <h4 class="text-center"><i class="bi bi-robot"></i> AI Suggestions</h4>
+                    <ul class="mb-0">
+                        {% for point in suggestion %}
+                        <li>{{ point }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('education.symptom_checker') }}">
+                    <div class="mb-3">
+                        <label for="symptoms" class="form-label">Enter your symptoms (comma-separated):</label>
+                        <input type="text" class="form-control form-control-lg" id="symptoms" name="symptoms" placeholder="e.g., fever, cough, headache" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-gradient btn-lg shadow"><i class="bi bi-search-heart me-2"></i>Check Symptoms</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if detailed_explanation %}
+        <div class="mt-5">
+            <h2 class="text-center text-primary fw-bold mb-3">Detailed Explanation</h2>
+            <div class="detailed-explanation">
+                <p>{{ detailed_explanation }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

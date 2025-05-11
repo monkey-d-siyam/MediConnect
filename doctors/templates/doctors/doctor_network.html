@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .network-bg {
+        background: linear-gradient(120deg, #e0e7ff 0%, #fff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+        padding: 2.5rem 1.5rem 2rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+    }
+    .glass-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79,140,255,0.10);
+    }
+    .doctor-icon {
+        font-size: 2.5rem;
+        color: #4f8cff;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+    .card-title {
+        color: #1a237e;
+        font-weight: 700;
+    }
+    .badge-specialty {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        border-radius: 0.5rem;
+        padding: 0.3rem 0.8rem;
+        display: inline-block;
+    }
+    .doctor-contact {
+        font-size: 0.97rem;
+        color: #374151;
+    }
+</style>
+<div class="container my-5">
+    <div class="network-bg">
+        <h1 class="mb-4 text-center text-primary fw-bold">
+            <span class="doctor-icon"><i class="bi bi-person-badge"></i></span>
+            Doctor Network
+        </h1>
+        <p class="text-muted text-center mb-5">Meet our trusted doctors and specialists available for remote consultation.</p>
+        <div class="row g-4">
+            {% for doctor in doctors %}
+            <div class="col-md-4">
+                <div class="glass-card card h-100">
+                    <div class="card-body text-center">
+                        <span class="doctor-icon"><i class="bi bi-person-circle"></i></span>
+                        <h5 class="card-title mb-1">{{ doctor[4] if doctor[4] else "Doctor" }}</h5>
+                        <div class="badge-specialty mb-2">{{ doctor[2] }}</div>
+                        <p class="doctor-contact mb-1"><strong>Experience:</strong> {{ doctor[3] }} years</p>
+                        <p class="doctor-contact mb-1"><strong>Qualifications:</strong> {{ doctor[5] }}</p>
+                        <p class="doctor-contact mb-1"><strong>Hospital:</strong> {{ doctor[6] }}</p>
+                        <p class="doctor-contact mb-1"><strong>Contact:</strong> {{ doctor[8] }}</p>
+                        <p class="doctor-contact mb-1"><strong>Gender:</strong> {{ doctor[1] }}</p>
+                        <p class="doctor-contact mb-1"><strong>Available Timeslots:</strong> {{ doctor[9] }}</p>
+                        <p class="doctor-contact"><strong>Bio:</strong> {{ doctor[7] }}</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-center">No doctors found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
