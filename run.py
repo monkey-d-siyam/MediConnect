@@ -8,7 +8,7 @@ from education.routes import education
 from pharmacy.routes import pharmacy
 from hospitals.routes import hospitals
 from doctors.routes import doctors_bp
-from consultation import consultation
+
 from extensions import mysql, mail, cache, socketio
 from forum.routes import forum
 
