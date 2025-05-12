@@ -26,5 +26,5 @@ def send_email_to_doctor(doctor_email, consultation_link):
         sender='contactmediconnect@gmail.com',
         recipients=[doctor_email]
     )
-    msg.body = f"I am under the water Please HELP ME!!. Join the call using the link below:\n\n{consultation_link}"
+    msg.body = f"Hello I am under the water Please HELP ME!!. Join the call using the link below:\n\n{consultation_link}"
     mail.send(msg)
