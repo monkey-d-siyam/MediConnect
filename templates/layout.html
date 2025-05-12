@@ -15,17 +15,21 @@
         body {
             background-color: #f8f9fa;
         }
+
         .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
         }
+
         .btn-primary:hover {
             background-color: #0056b3;
             border-color: #004085;
         }
+
         .card {
             border-radius: 15px;
         }
+
         /* Add a min-height to main to push footer down */
         main.flex-grow-1 {
             min-height: 60vh;
@@ -39,55 +43,67 @@
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="{{ url_for('core.home') }}">MediConnect</a>
+                <a class="navbar-brand" href="{{ url_for('core.home') }}">MediConnect</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
+        
+
                         {% if 'loggedin' in session %}
-                            {% if session['role'] == 'pharmacy' %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
-                                </li>
-                            {% elif session['role'] == 'patient' %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('appointment.patient_appointment_booking') }}">Appointments</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('core.list_pharmacies') }}">Pharmacies</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('education.symptom_checker') }}">Health Tips & Articles</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
-                                </li>
-                            {% elif session['role'] == 'doctor' %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('appointment.doctor_own_schedule') }}">Appointments</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('education.symptom_checker') }}">Health Tips & Articles</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
-                                </li>
-                            {% endif %}
+                        {% if session['role'] == 'pharmacy' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
+                        </li>
+                        {% elif session['role'] == 'patient' %}
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="{{ url_for('appointment.patient_appointment_booking') }}">Appointments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('core.patient_dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('core.list_pharmacies') }}">Pharmacies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('education.symptom_checker') }}">Symptom Checker</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('education.health_tips') }}">Health Tips</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
+                        </li>
+                        {% elif session['role'] == 'doctor' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('appointment.doctor_schedule') }}">Appointments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('core.doctor_dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('education.symptom_checker') }}">Symptom Checker</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('education.health_tips') }}">Health Tips</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('core.logout') }}">Logout</a>
+                        </li>
+                        {% endif %}
                         {% else %}
-                            <!-- Guest navigation -->
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('core.login') }}">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('core.register') }}">Sign up</a>
-                            </li>
+                        <!-- Guest navigation -->
+                         <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('education.health_tips') }}">Health Tips</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('core.login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('core.register') }}">Sign up</a>
+                        </li>
                         {% endif %}
                     </ul>
                 </div>
@@ -98,14 +114,14 @@
         <main class="flex-grow-1">
             <div class="container my-5">
                 {% with messages = get_flashed_messages(with_categories=true) %}
-                  {% if messages %}
-                    {% for category, message in messages %}
-                      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                    {% endfor %}
-                  {% endif %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
                 {% endwith %}
                 {% block content %}
                 {% endblock %}
