@@ -25,16 +25,57 @@
         display: inline-block;
     }
     .btn-gradient {
-        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
         color: #fff !important;
         border: none;
         box-shadow: 0 2px 8px rgba(79,140,255,0.15);
-        transition: background 0.2s, box-shadow 0.2s;
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+        font-weight: 500;
+        letter-spacing: 0.5px;
     }
-    .btn-gradient:hover {
+    .btn-pharmacy {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+    }
+    .btn-pharmacy:hover, .btn-pharmacy:focus {
         background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
         box-shadow: 0 4px 16px rgba(56,232,255,0.18);
         color: #fff !important;
+        transform: translateY(-2px) scale(1.04);
+    }
+    .btn-hospital {
+        background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
+    }
+    .btn-hospital:hover, .btn-hospital:focus {
+        background: linear-gradient(90deg, #ffcc33 0%, #ffb347 100%);
+        box-shadow: 0 4px 16px rgba(255,204,51,0.18);
+        color: #fff !important;
+        transform: translateY(-2px) scale(1.04);
+    }
+    .btn-doctor {
+        background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+    }
+    .btn-doctor:hover, .btn-doctor:focus {
+        background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+        box-shadow: 0 4px 16px rgba(67,233,123,0.18);
+        color: #fff !important;
+        transform: translateY(-2px) scale(1.04);
+    }
+    .btn-forum {
+        background: linear-gradient(90deg, #a770ef 0%, #f6d365 100%);
+    }
+    .btn-forum:hover, .btn-forum:focus {
+        background: linear-gradient(90deg, #f6d365 0%, #a770ef 100%);
+        box-shadow: 0 4px 16px rgba(167,112,239,0.18);
+        color: #fff !important;
+        transform: translateY(-2px) scale(1.04);
+    }
+    .btn-symptom {
+        background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
+    }
+    .btn-symptom:hover, .btn-symptom:focus {
+        background: linear-gradient(90deg, #f09819 0%, #ff5858 100%);
+        box-shadow: 0 4px 16px rgba(255,88,88,0.18);
+        color: #fff !important;
+        transform: translateY(-2px) scale(1.04);
     }
     .section-title {
         letter-spacing: 1px;
@@ -60,9 +101,10 @@
                 Your trusted platform for remote healthcare, connecting patients, doctors, and pharmacies with ease.
             </p>
             <div class="mb-4">
-                <a href="/pharmacy/search_pharmacy" class="btn btn-gradient btn-lg me-2 mb-2 shadow"><i class="bi bi-capsule"></i> Find Pharmacy</a>
-                <a href="/hospitals/search_hospital" class="btn btn-warning btn-lg me-2 mb-2 shadow"><i class="bi bi-hospital"></i> Find Hospital</a>
-                <a href="/doctors" class="btn btn-info btn-lg mb-2 shadow"><i class="bi bi-person-badge"></i> Doctor Network</a>
+                <a href="/pharmacy/search_pharmacy" class="btn btn-gradient btn-pharmacy btn-lg me-2 mb-2 shadow d-inline-flex align-items-center"><i class="bi bi-capsule me-2"></i> Find Pharmacy</a>
+                <a href="/hospitals/search_hospital" class="btn btn-gradient btn-hospital btn-lg me-2 mb-2 shadow d-inline-flex align-items-center"><i class="bi bi-hospital me-2"></i> Find Hospital</a>
+                <a href="/doctors" class="btn btn-gradient btn-doctor btn-lg me-2 mb-2 shadow d-inline-flex align-items-center"><i class="bi bi-person-badge me-2"></i> Doctor Network</a>
+                <a href="{{ url_for('forum.forum_home') }}" class="btn btn-gradient btn-forum btn-lg mb-2 shadow d-inline-flex align-items-center"><i class="bi bi-people me-2"></i> Community Forum</a>
             </div>
         </div>
         <div class="col-md-5 text-center">
@@ -134,7 +176,7 @@
 
 <!-- Symptom Checker Button in the Bottom Left Corner -->
 <div style="position: fixed; bottom: 20px; left: 20px; z-index: 999;">
-    <a href="{{ url_for('education.symptom_checker') }}" class="btn btn-lg btn-gradient shadow-lg d-flex align-items-center">
+    <a href="{{ url_for('education.symptom_checker') }}" class="btn btn-lg btn-gradient btn-symptom shadow-lg d-flex align-items-center">
         <i class="bi bi-heart-pulse me-2"></i> Symptom Checker
     </a>
 </div>

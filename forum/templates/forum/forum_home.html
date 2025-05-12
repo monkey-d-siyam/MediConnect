@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+    }
+    .glass-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79,140,255,0.10);
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79,140,255,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56,232,255,0.18);
+        color: #fff !important;
+    }
+    .answer-card {
+        background: rgba(230,245,255,0.7);
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        margin-left: 1.5rem;
+    }
+    .question-author {
+        color: #4f8cff;
+        font-weight: 600;
+    }
+    .answer-author {
+        color: #198754;
+        font-weight: 500;
+    }
+    .forum-title {
+        letter-spacing: 1px;
+        font-weight: 700;
+        color: #1a237e;
+    }
+</style>
+<div class="container my-5">
+    <div class="glass-card p-4 mb-4">
+        <h2 class="forum-title mb-3"><i class="bi bi-people me-2"></i>Community Forum</h2>
+        <p class="mb-4">Ask health-related questions and get answers from our doctor community. Everyone can view, but only patients can ask and only doctors can answer.</p>
+        <!-- Only patients can ask questions -->
+        {% if 'loggedin' in session and session['role'] == 'patient' %}
+        <form method="POST" class="mb-4">
+            <div class="mb-2">
+                <textarea name="question" class="form-control" rows="2" placeholder="Ask a health-related question..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-gradient"><i class="bi bi-send"></i> Post Question</button>
+        </form>
+        {% elif not 'loggedin' in session %}
+        <div class="alert alert-info mb-4">Log in to ask a question.</div>
+        {% endif %}
+        {% if questions %}
+        <div class="list-group">
+            {% for q in questions %}
+            <div class="list-group-item mb-3 glass-card">
+                <div>
+                    <span class="question-author"><i class="bi bi-person-circle"></i> {{ q[2] }}</span>
+                    <span class="text-muted small ms-2">asked:</span>
+                </div>
+                <div class="mb-2 fs-5">{{ q[1] }}</div>
+                <!-- Answers -->
+                <div class="ms-2">
+                    {% if answer_map.get(q[0]) %}
+                        {% for ans in answer_map[q[0]] %}
+                        <div class="answer-card">
+                            <span class="answer-author"><i class="bi bi-person-badge"></i> {{ ans.name }}</span>
+                            <span class="text-muted small ms-2">answered:</span>
+                            <div>{{ ans.answer }}</div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <!-- Only doctors can answer -->
+                {% if 'loggedin' in session and session['role'] == 'doctor' %}
+                <form method="POST" action="{{ url_for('forum.answer_question', question_id=q[0]) }}" class="mt-2 ms-2">
+                    <div class="input-group">
+                        <input type="text" name="answer" class="form-control" placeholder="Write an answer..." required>
+                        <button type="submit" class="btn btn-success"><i class="bi bi-reply"></i> Answer</button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-secondary">No questions yet. Be the first to ask!</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

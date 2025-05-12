@@ -9,6 +9,7 @@ from pharmacy.routes import pharmacy
 from hospitals.routes import hospitals
 from doctors.routes import doctors_bp
 from consultation import consultation
+from forum.routes import forum
 
 # Load environment variables from .env file
 load_dotenv()
@@ -44,6 +45,8 @@ app.register_blueprint(pharmacy, url_prefix='/pharmacy')
 app.register_blueprint(hospitals, url_prefix='/hospitals')
 app.register_blueprint(doctors_bp)
 app.register_blueprint(consultation, url_prefix='/consultation')
+app.register_blueprint(forum)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
