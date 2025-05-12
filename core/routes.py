@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, session, request, flash
+from flask import render_template, redirect, url_for, session, request, flash, send_from_directory
 from . import core
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField
@@ -128,15 +128,15 @@ def doctor_profile_setup():
 def patient_profile_setup():
     if 'loggedin' in session and session['role'] == 'patient':
         cursor = mysql.connection.cursor(DictCursor)
-        #Data fetch
+        # Fetch existing profile
         cursor.execute("SELECT * FROM patient_profile WHERE patient_id = %s", (session['id'],))
         profile = cursor.fetchone()
 
-        #Prefilling the form
+        # Pre-fill the form with existing data
         form = PatientProfileForm(data=profile)
 
         if form.validate_on_submit():
-            # File upload
+            # File upload logic
             prescriptions_path = profile['prescriptions'] if profile else None
             medical_reports_path = profile['medical_reports'] if profile else None
 
@@ -151,27 +151,36 @@ def patient_profile_setup():
                 medical_reports_filename = secure_filename(medical_reports_file.filename)
                 medical_reports_path = os.path.join(UPLOAD_FOLDER, medical_reports_filename)
                 medical_reports_file.save(medical_reports_path)
-            cursor.execute("""
-                INSERT INTO patient_profile (patient_id, gender, blood_group, contact_number, address, medical_history, allergies, current_medications, emergency_contact, prescriptions, medical_reports)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE
-                gender = VALUES(gender),
-                blood_group = VALUES(blood_group),
-                contact_number = VALUES(contact_number),
-                address = VALUES(address),
-                medical_history = VALUES(medical_history),
-                allergies = VALUES(allergies),
-                current_medications = VALUES(current_medications),
-                emergency_contact = VALUES(emergency_contact),
-                prescriptions = VALUES(prescriptions),
-                medical_reports = VALUES(medical_reports)
-            """, (
-                session['id'], form.gender.data, form.blood_group.data, form.contact_number.data, form.address.data,
-                form.medical_history.data, form.allergies.data, form.current_medications.data, form.emergency_contact.data,
-                prescriptions_path, medical_reports_path
-            ))
+
+            if profile:
+                # Update existing profile
+                cursor.execute("""
+                    UPDATE patient_profile
+                    SET gender = %s, blood_group = %s, contact_number = %s, address = %s,
+                        medical_history = %s, allergies = %s, current_medications = %s,
+                        emergency_contact = %s, prescriptions = %s, medical_reports = %s
+                    WHERE patient_id = %s
+                """, (
+                    form.gender.data, form.blood_group.data, form.contact_number.data, form.address.data,
+                    form.medical_history.data, form.allergies.data, form.current_medications.data,
+                    form.emergency_contact.data, prescriptions_path, medical_reports_path, session['id']
+                ))
+                flash('Profile updated successfully!', 'success')
+            else:
+                # Insert new profile
+                cursor.execute("""
+                    INSERT INTO patient_profile (patient_id, gender, blood_group, contact_number, address,
+                                                 medical_history, allergies, current_medications, emergency_contact,
+                                                 prescriptions, medical_reports)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    session['id'], form.gender.data, form.blood_group.data, form.contact_number.data, form.address.data,
+                    form.medical_history.data, form.allergies.data, form.current_medications.data,
+                    form.emergency_contact.data, prescriptions_path, medical_reports_path
+                ))
+                flash('Profile created successfully!', 'success')
+
             mysql.connection.commit()
-            flash('Profile updated successfully!', 'success')
             return redirect(url_for('core.patient_dashboard'))
 
         return render_template('core/patient_profile_setup.html', title='Patient Profile Setup', form=form)
@@ -182,9 +191,10 @@ def doctor_dashboard():
     if 'loggedin' in session and session['role'] == 'doctor':
         cursor = mysql.connection.cursor(DictCursor)
         cursor.execute("""
-            SELECT dp.*, u.email 
+            SELECT dp.*, u.email, pp.medical_reports 
             FROM doctor_profile dp 
             JOIN user u ON dp.doctor_id = u.userid 
+            LEFT JOIN patient_profile pp ON dp.doctor_id = pp.patient_id
             WHERE dp.doctor_id = %s
         """, (session['id'],))
         profile = cursor.fetchone()
@@ -334,3 +344,7 @@ def compare_prices():
         results = []
     cursor.close()
     return render_template('core/compare_prices.html', medicine_name=medicine_name, results=results)
+
+@core.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory('uploads', filename)
