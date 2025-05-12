@@ -3,34 +3,107 @@
 {% block title %}Book Appointment{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Search for Doctors</h2>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.search.label(class="form-label") }}
-            {{ form.search(class="form-control") }}
-        </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+<style>
+    .search-bg {
+        background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.07);
+        padding: 2.5rem 1.5rem 2rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+    .doctor-card {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .doctor-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79, 140, 255, 0.10);
+    }
+    .appointment-card {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .appointment-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79, 140, 255, 0.10);
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79, 140, 255, 0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56, 232, 255, 0.18);
+        color: #fff !important;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="search-bg">
+        <h1 class="text-center text-primary fw-bold mb-4">Search for Doctors</h1>
+        <form method="POST" class="mb-4">
+            {{ form.hidden_tag() }}
+            <div class="form-group mb-3">
+                {{ form.search.label(class="form-label") }}
+                {{ form.search(class="form-control form-control-lg", placeholder="Search by name or specialization") }}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-gradient btn-lg shadow"><i class="bi bi-search-heart me-2"></i>Search</button>
+            </div>
+        </form>
+    </div>
 
     {% if doctors %}
-    <h3 class="mt-4">Available Doctors</h3>
-    <ul class="list-group">
+    <h2 class="text-center text-primary fw-bold mb-4">Available Doctors</h2>
+    <div class="row">
         {% for doctor in doctors %}
-        <li class="list-group-item">
-            <strong>{{ doctor.name }}</strong> - {{ doctor.specialization }}
-            <form method="POST" class="mt-2">
-                <input type="hidden" name="doctor_id" value="{{ doctor.doctor_id }}">
-                <div class="form-group">
-                    <label for="appointment_date">Select Date:</label>
-                    <input type="date" name="appointment_date" class="form-control" required>
+        <div class="col-md-4 mb-4">
+            <div class="doctor-card p-4">
+                <h3 class="text-primary">{{ doctor.name }}</h3>
+                <p class="text-muted">{{ doctor.specialization }}</p>
+                <div class="text-center">
+                    <a href="{{ url_for('appointment.doctor_available_slot', doctor_id=doctor.doctor_id) }}" class="btn btn-gradient btn-lg shadow">View Schedule</a>
                 </div>
-                <button type="submit" class="btn btn-success mt-2">Book Appointment</button>
-            </form>
-        </li>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
+    {% endif %}
+
+    <h2 class="text-center text-primary fw-bold mb-4">Your Appointments</h2>
+    {% if appointments %}
+    <div class="row">
+        {% for appointment in appointments %}
+        <div class="col-md-6 mb-4">
+            <div class="appointment-card p-4">
+                <h4 class="text-primary">Doctor: {{ appointment.doctor_name }}</h4>
+                <p class="text-muted">Date & Time: {{ appointment.appointment_date }}</p>
+                <p class="text-muted">Status: 
+                    {% if appointment.status == 'pending' %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif appointment.status == 'approved' %}
+                    <span class="badge bg-success">Approved</span>
+                    {% elif appointment.status == 'rescheduled' %}
+                    <span class="badge bg-info text-dark">Rescheduled</span>
+                    {% elif appointment.status == 'cancelled' %}
+                    <span class="badge bg-danger">Cancelled</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center text-muted">You have no appointments.</p>
     {% endif %}
 </div>
 {% endblock %}

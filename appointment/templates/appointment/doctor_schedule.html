@@ -1,69 +1,71 @@
 {% extends "layout.html" %}
 
-{% block title %}Doctor Appointments{% endblock %}
+{% block title %}Doctor Schedule{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Your Appointments</h2>
-    {% if appointments %}
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Patient Name</th>
-                <th>Date</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for appointment in appointments %}
-            <tr>
-                <td>{{ appointment.patient_name }}</td>
-                <td>{{ appointment.date }}</td>
-                <td>{{ appointment.start_time }}</td>
-                <td>{{ appointment.end_time }}</td>
-                <td>{{ appointment.status }}</td>
-                <td>
-                    <form method="POST">
-                        <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
-                        <button name="action" value="approve" class="btn btn-success btn-sm">Approve</button>
-                        <button name="action" value="decline" class="btn btn-danger btn-sm">Decline</button>
-                        <button name="action" value="reschedule" class="btn btn-warning btn-sm">Reschedule</button>
-                        <input type="date" name="new_date" class="form-control mt-2">
-                        <input type="time" name="new_start_time" class="form-control mt-2">
-                        <input type="time" name="new_end_time" class="form-control mt-2">
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No appointments found.</p>
-    {% endif %}
-</div>
+<style>
+    .schedule-bg {
+        background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.07);
+        padding: 2.5rem 1.5rem 2rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+    .appointment-card {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(2px);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .appointment-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 8px 32px rgba(79, 140, 255, 0.10);
+    }
+</style>
 
-<div class="container mt-5">
-    <h2>Doctor Schedule</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Doctor ID</th>
-                <th>Name</th>
-                <th>Role</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for appointment in appointments %}
-            <tr>
-                <td>{{ appointment[0] }}</td>
-                <td>{{ appointment[1] }}</td>
-                <td>{{ appointment[2] }}</td>
-            </tr>
+<div class="container my-5">
+    <div class="schedule-bg">
+        <h1 class="text-center text-primary fw-bold mb-4">Pending Appointments</h1>
+        {% if pending_appointments %}
+        <div class="row">
+            {% for appointment in pending_appointments %}
+            <div class="col-md-6 mb-4">
+                <div class="appointment-card p-4">
+                    <h4 class="text-primary">{{ appointment.patient_name }}</h4>
+                    <p class="text-muted">Requested Time: {{ appointment.appointment_date }}</p>
+                    <form method="POST">
+                        <input type="hidden" name="appointment_id" value="{{ appointment.appointment_id }}">
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" name="status" value="approved" class="btn btn-gradient">Approve</button>
+                            <button type="submit" name="status" value="cancelled" class="btn btn-danger">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+        {% else %}
+        <p class="text-center text-muted">No pending appointments.</p>
+        {% endif %}
+    </div>
+
+    <div class="schedule-bg">
+        <h1 class="text-center text-primary fw-bold mb-4">Approved Appointments</h1>
+        {% if approved_appointments %}
+        <div class="row">
+            {% for appointment in approved_appointments %}
+            <div class="col-md-6 mb-4">
+                <div class="appointment-card p-4">
+                    <h4 class="text-primary">{{ appointment.patient_name }}</h4>
+                    <p class="text-muted">Approved Time: {{ appointment.appointment_date }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-muted">No approved appointments.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

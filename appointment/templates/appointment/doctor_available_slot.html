@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<style>
+    .slot-bg {
+        background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.07);
+        padding: 2.5rem 1.5rem 2rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #4f8cff 0%, #38e8ff 100%);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(79, 140, 255, 0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #38e8ff 0%, #4f8cff 100%);
+        box-shadow: 0 4px 16px rgba(56, 232, 255, 0.18);
+        color: #fff !important;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="slot-bg">
+        <h1 class="text-center text-primary fw-bold mb-4">Select Appointment Date and Time</h1>
+        <form method="POST">
+            <div class="mb-4">
+                <label for="appointment_date" class="form-label">Select Date</label>
+                <input type="date" id="appointment_date" name="appointment_date" class="form-control form-control-lg" required>
+            </div>
+            <div class="mb-4">
+                <label for="appointment_time" class="form-label">Select Time</label>
+                <select id="appointment_time" name="appointment_time" class="form-select form-select-lg" required>
+                    {% for slot in available_slots %}
+                    <option value="{{ slot }}">{{ slot }}</option>
+                    {% endfor %}
+                    {% if not available_slots %}
+                    <option disabled>No available slots</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-gradient btn-lg shadow">Book Appointment</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
