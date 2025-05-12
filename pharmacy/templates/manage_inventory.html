@@ -76,6 +76,7 @@
                     <th>Medicine Name</th>
                     <th>Stock</th>
                     <th>Price</th>
+                    <th>Compare Prices</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,10 +85,13 @@
                     <td>{{ med[1] }}</td>
                     <td>{{ med[2] }}</td>
                     <td>{{ med[3] }}</td>
+                    <td>
+                        <a href="{{ url_for('core.compare_prices', medicine=med[1]) }}" class="btn btn-outline-primary btn-sm w-100">Compare Prices</a>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="3" class="text-center">No medicines in inventory.</td>
+                    <td colspan="4" class="text-center">No medicines in inventory.</td>
                 </tr>
                 {% endfor %}
             </tbody>

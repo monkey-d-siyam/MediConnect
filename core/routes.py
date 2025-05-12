@@ -316,3 +316,21 @@ def pharmacy_orders():
         orders = cursor.fetchall()
         return render_template('core/pharmacy_orders.html', orders=orders)
     return redirect(url_for('core.login'))
+
+@core.route('/compare_prices', methods=['GET'])
+def compare_prices():
+    medicine_name = request.args.get('medicine')
+    cursor = mysql.connection.cursor()
+    if medicine_name:
+        cursor.execute("""
+            SELECT p.pharmacy_name, i.price, i.stock
+            FROM pharmacy_inventory i
+            JOIN pharmacy_profile p ON i.pharmacy_id = p.pharmacy_id
+            WHERE i.medicine_name = %s
+            ORDER BY i.price ASC
+        """, (medicine_name,))
+        results = cursor.fetchall()
+    else:
+        results = []
+    cursor.close()
+    return render_template('core/compare_prices.html', medicine_name=medicine_name, results=results)
