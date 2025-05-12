@@ -41,7 +41,8 @@
                     <h5 class="card-title fw-bold">{{ medicine.medicine_name }}</h5>
                     <p class="card-text mb-1"><strong>Stock:</strong> {{ medicine.stock }}</p>
                     <p class="card-text mb-3"><strong>Price:</strong> {{ medicine.price }}</p>
-                    <a href="{{ url_for('core.order_medicine', pharmacy_id=pharmacy_id, medicine_id=medicine.inventory_id) }}" class="btn btn-gradient w-100">Order</a>
+                    <a href="{{ url_for('core.order_medicine', pharmacy_id=pharmacy_id, medicine_id=medicine.inventory_id) }}" class="btn btn-gradient w-100 mb-2">Order</a>
+                    <a href="{{ url_for('core.compare_prices', medicine=medicine.medicine_name) }}" class="btn btn-outline-primary w-100">Compare Prices</a>
                 </div>
             </div>
         </div>

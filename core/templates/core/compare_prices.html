@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Price Comparison{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary fw-bold">Price Comparison{% if medicine_name %} for "{{ medicine_name }}"{% endif %}</h2>
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="medicine" class="form-control" placeholder="Enter medicine name" value="{{ medicine_name or '' }}" required>
+            <button class="btn btn-primary" type="submit">Compare</button>
+        </div>
+    </form>
+    {% if medicine_name %}
+        {% if results %}
+            <div class="table-responsive">
+                <table class="table table-bordered glass-card">
+                    <thead>
+                        <tr>
+                            <th>Pharmacy</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in results %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                            <td>{{ row[2] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">No pharmacies found with this medicine.</div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

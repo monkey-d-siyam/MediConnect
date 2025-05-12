@@ -25,10 +25,15 @@
         box-shadow: 0 4px 16px rgba(56,232,255,0.18);
         color: #fff !important;
     }
+    @media (max-width: 991px) {
+        .dashboard-row {
+            flex-direction: column;
+        }
+    }
 </style>
 <div class="container mt-5">
     <h2 class="mb-4 text-primary fw-bold">Pharmacy Dashboard</h2>
-    <div class="row g-4">
+    <div class="row g-4 dashboard-row justify-content-center">
         <div class="col-md-6 col-lg-4">
             <div class="card glass-card h-100 shadow">
                 <div class="card-body text-center">
@@ -53,15 +58,6 @@
                     <i class="bi bi-truck text-primary" style="font-size:2rem;"></i>
                     <h5 class="card-title mt-2">Medicine Delivery/Pickup Orders</h5>
                     <a href="{{ url_for('core.pharmacy_orders') }}" class="btn btn-gradient btn-primary">View Orders</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="card glass-card h-100 shadow">
-                <div class="card-body text-center">
-                    <i class="bi bi-currency-dollar text-warning" style="font-size:2rem;"></i>
-                    <h5 class="card-title mt-2">Price Comparison</h5>
-                    <a href="#" class="btn btn-gradient disabled">Coming Soon</a>
                 </div>
             </div>
         </div>
