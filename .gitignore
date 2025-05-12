@@ -5,3 +5,4 @@ venv/
 .venv
 .env
 extensions.py
+.uploads
