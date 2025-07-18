@@ -12,7 +12,7 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item"><strong>{{ session.name }}</strong></li>
                     <li class="list-group-item">Role: {{ session.role|capitalize }}</li>
-                    <li class="list-group-item">Email: {{ session.email }}</li> <!-- Display email -->
+                    <li class="list-group-item">Email: {{ session.email }}</li>
                     <li class="list-group-item"><a href="{{ url_for('core.patient_profile_setup') }}">Edit Profile</a></li>
                     <li class="list-group-item"><a href="{{ url_for('core.logout') }}" class="text-danger">Logout</a></li>
                 </ul>
@@ -57,6 +57,42 @@
                 {% else %}
                 <p class="text-danger">No profile information available.</p>
                 {% endif %}
+
+                <!-- Recent Medicine Orders Section -->
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5>Your Recent Medicine Orders</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if orders %}
+                            {% for order in orders %}
+                            <div class="mb-3 p-3 rounded" style="background:rgba(230,245,255,0.7);">
+                                <div>
+                                    <strong>Pharmacy:</strong> {{ order.pharmacy_name or order.pharmacy_id }}<br>
+                                    <strong>Medicine:</strong> {{ order.medicine_name }}<br>
+                                    <strong>Quantity:</strong> {{ order.quantity }}<br>
+                                    <strong>Requested At:</strong> {{ order.request_time }}
+                                </div>
+                                <div class="mt-2">
+                                    <strong>Status:</strong>
+                                    {% if order.status == 'pending' %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% elif order.status == 'approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% elif order.status == 'canceled' %}
+                                        <span class="badge bg-danger">Canceled</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info">No recent medicine orders.</div>
+                        {% endif %}
+                        <a href="{{ url_for('core.patient_orders') }}" class="btn btn-gradient mt-2">View All Orders</a>
+                    </div>
+                </div>
+                <!-- End Medicine Orders Section -->
+
             </div>
         </div>
     </div>

@@ -8,7 +8,6 @@ import os
 from googleapiclient.discovery import build
 
 
-# Initialize Google Gemini client with API key
 client = genai.Client(api_key="AIzaSyDVQ8oZIrmO_rPAc6FVTR8W1G9Edj3W6oc")
 
 @education.route('/symptom-checker', methods=['GET', 'POST'])

@@ -217,7 +217,18 @@ def patient_dashboard():
         if profile:
             session['email'] = profile['email']
 
-        return render_template('core/patient_dashboard.html', profile=profile)
+        # Fetch latest 5 orders for this patient
+        cursor.execute("""
+            SELECT mr.*, p.pharmacy_name
+            FROM medicine_requests mr
+            LEFT JOIN pharmacy_profile p ON mr.pharmacy_id = p.pharmacy_id
+            WHERE mr.patient_id = %s
+            ORDER BY mr.request_time DESC
+            LIMIT 5
+        """, (session['id'],))
+        orders = cursor.fetchall()
+
+        return render_template('core/patient_dashboard.html', profile=profile, orders=orders)
     return redirect(url_for('core.login'))
 
 @core.route('/doctor/appointments')
@@ -314,17 +325,35 @@ def order_medicine(pharmacy_id, medicine_id):
         return render_template('core/order_medicine.html', form=form, medicine=medicine)
     return redirect(url_for('core.login'))
 
-@core.route('/pharmacy/orders')
+@core.route('/pharmacy/orders', methods=['GET', 'POST'])
 def pharmacy_orders():
     if 'loggedin' in session and session['role'] == 'pharmacy':
         cursor = mysql.connection.cursor(DictCursor)
+        if request.method == 'POST':
+            order_id = request.form['order_id']
+            action = request.form['action']
+            if action == 'approve':
+                cursor.execute("UPDATE medicine_requests SET status='approved' WHERE request_id=%s", (order_id,))
+            elif action == 'cancel':
+                cursor.execute("UPDATE medicine_requests SET status='canceled' WHERE request_id=%s", (order_id,))
+            mysql.connection.commit()
         cursor.execute("""
             SELECT * FROM medicine_requests WHERE pharmacy_id = (
                 SELECT pharmacy_id FROM pharmacy_profile WHERE user_id = %s
-            ) AND status = 'pending'
+            )
+            ORDER BY request_time DESC
         """, (session['id'],))
         orders = cursor.fetchall()
         return render_template('core/pharmacy_orders.html', orders=orders)
+    return redirect(url_for('core.login'))
+
+@core.route('/patient/orders')
+def patient_orders():
+    if 'loggedin' in session and session['role'] == 'patient':
+        cursor = mysql.connection.cursor(DictCursor)
+        cursor.execute("SELECT * FROM medicine_requests WHERE patient_id = %s ORDER BY request_time DESC", (session['id'],))
+        orders = cursor.fetchall()
+        return render_template('core/patient_orders.html', orders=orders)
     return redirect(url_for('core.login'))
 
 @core.route('/compare_prices', methods=['GET'])

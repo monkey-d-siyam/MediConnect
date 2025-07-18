@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Medicine Orders{% endblock %}
+{% block title %}My Medicine Orders{% endblock %}
 {% block content %}
 <style>
     .glass-card {
@@ -21,24 +21,23 @@
 </style>
 <div class="container mt-5">
     <div class="glass-card p-4">
-        <h2 class="mb-4">New Medicine Orders</h2>
+        <h2 class="mb-4">My Medicine Orders</h2>
         <div class="table-responsive">
             <table class="table table-bordered glass-table">
                 <thead>
                     <tr>
-                        <th>Patient ID</th>
+                        <th>Pharmacy ID</th>
                         <th>Medicine</th>
                         <th>Quantity</th>
                         <th>Delivery Method</th>
                         <th>Status</th>
                         <th>Requested At</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for order in orders %}
                     <tr>
-                        <td>{{ order.patient_id }}</td>
+                        <td>{{ order.pharmacy_id }}</td>
                         <td>{{ order.medicine_name }}</td>
                         <td>{{ order.quantity }}</td>
                         <td>{{ order.delivery_method|capitalize }}</td>
@@ -52,21 +51,10 @@
                             {% endif %}
                         </td>
                         <td>{{ order.request_time }}</td>
-                        <td>
-                            {% if order.status == 'pending' %}
-                            <form method="POST" style="display:inline;">
-                                <input type="hidden" name="order_id" value="{{ order.request_id }}">
-                                <button name="action" value="approve" class="btn btn-success btn-sm">Approve</button>
-                                <button name="action" value="cancel" class="btn btn-danger btn-sm">Cancel</button>
-                            </form>
-                            {% else %}
-                                <span class="text-muted">No action</span>
-                            {% endif %}
-                        </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" class="text-center text-danger">No new orders.</td>
+                        <td colspan="6" class="text-center text-danger">No orders found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
